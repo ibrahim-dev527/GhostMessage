@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Terms of Service — GhostMessage</title>
+<meta name="description" content="Read GhostMessage's Terms of Service. Know your rights and responsibilities on our anonymous messaging platform."/>
+<link rel="icon" href="logo.png" type="image/png"/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+:root{--red:#e63946;--green:#2dc653;--yellow:#ffd60a;--dark:#0a0a0f;--dark2:#111118;--dark3:#1a1a24;--card:#16161e;--border:rgba(255,255,255,0.08);--text:#e8e8f0;--muted:#888899;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--dark);color:var(--text);line-height:1.7;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--dark);}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}
+/* NAV */
+nav{position:sticky;top:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(10,10,15,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:0.6rem;text-decoration:none;}
+.nav-logo img{height:32px;}
+.nav-logo span{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;background:linear-gradient(90deg,var(--red),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-right{display:flex;align-items:center;gap:1rem;}
+.nav-right a{color:var(--muted);text-decoration:none;font-size:0.85rem;transition:color 0.2s;}
+.nav-right a:hover{color:var(--text);}
+.btn-nav{padding:0.5rem 1.2rem;border-radius:50px;background:linear-gradient(135deg,var(--red),#c1121f);color:#fff;text-decoration:none;font-size:0.84rem;font-weight:600;transition:all 0.2s;}
+.btn-nav:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(230,57,70,0.4);}
+/* HAMBURGER + LEFT MENU */
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:0.25rem;z-index:600;}
+.hamburger span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:all 0.35s cubic-bezier(0.23,1,0.32,1);}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:490;}
+.mob-overlay.show{display:block;}
+.mobile-menu{position:fixed;top:0;left:0;bottom:0;width:280px;background:var(--dark2);border-right:1px solid var(--border);z-index:495;display:flex;flex-direction:column;padding:2rem 1.5rem;transform:translateX(-100%);transition:transform 0.35s cubic-bezier(0.23,1,0.32,1);}
+.mobile-menu.open{transform:translateX(0);}
+.mob-logo{display:flex;align-items:center;gap:0.6rem;margin-bottom:2.5rem;text-decoration:none;}
+.mob-logo img{height:32px;}
+.mob-logo span{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;background:linear-gradient(90deg,var(--red),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.mob-link{display:block;padding:0.85rem 0;color:var(--muted);text-decoration:none;font-size:1rem;font-weight:500;border-bottom:1px solid var(--border);transition:color 0.2s;}
+.mob-link:hover{color:var(--text);}
+.mob-cta{margin-top:2rem;display:flex;flex-direction:column;gap:0.75rem;}
+.btn-m{display:inline-flex;align-items:center;justify-content:center;padding:0.7rem 1.3rem;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;border:none;text-decoration:none;transition:all 0.3s;}
+.btn-red{background:linear-gradient(135deg,var(--red),#c1121f);color:#fff;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+/* HERO */
+.page-hero{padding:5rem 5% 3.5rem;background:radial-gradient(ellipse at 50% 0%,rgba(230,57,70,0.09),transparent 70%);text-align:center;border-bottom:1px solid var(--border);}
+.page-hero .badge{display:inline-flex;align-items:center;gap:0.45rem;padding:0.35rem 1rem;background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.28);border-radius:50px;font-size:0.75rem;color:var(--red);font-weight:600;margin-bottom:1.25rem;}
+.page-hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:800;margin-bottom:0.75rem;}
+.page-hero p{color:var(--muted);font-size:0.92rem;max-width:560px;margin:0 auto;line-height:1.7;}
+.last-updated{display:inline-block;margin-top:1rem;padding:0.3rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:50px;font-size:0.75rem;color:var(--muted);}
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:240px 1fr;gap:3rem;max-width:1100px;margin:0 auto;padding:4rem 5%;}
+/* TOC */
+.toc{position:sticky;top:90px;height:fit-content;}
+.toc h4{font-size:0.73rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;}
+.toc ul{list-style:none;}
+.toc li{margin-bottom:0.35rem;}
+.toc a{color:var(--muted);text-decoration:none;font-size:0.83rem;display:flex;align-items:center;gap:0.45rem;padding:0.28rem 0.55rem;border-radius:7px;transition:all 0.2s;border-left:2px solid transparent;}
+.toc a:hover,.toc a.active{color:var(--red);background:rgba(230,57,70,0.06);border-left-color:var(--red);}
+/* CONTENT */
+.doc-content{min-width:0;}
+.doc-sec{margin-bottom:3rem;scroll-margin-top:100px;}
+.doc-sec h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1rem;padding-bottom:0.65rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;}
+.doc-sec h2 span{font-size:1.1rem;}
+.doc-sec p{color:var(--muted);font-size:0.9rem;line-height:1.8;margin-bottom:1rem;}
+.doc-sec ul,.doc-sec ol{color:var(--muted);font-size:0.9rem;line-height:1.8;margin-bottom:1rem;padding-left:1.5rem;}
+.doc-sec li{margin-bottom:0.4rem;}
+.doc-sec strong{color:var(--text);}
+.doc-sec a{color:var(--green);text-decoration:none;}
+.doc-sec a:hover{text-decoration:underline;}
+.info-box{border-radius:12px;padding:1rem 1.25rem;margin:1.25rem 0;display:flex;gap:0.7rem;font-size:0.86rem;line-height:1.65;}
+.info-box .ib-ic{font-size:1.05rem;flex-shrink:0;margin-top:0.1rem;}
+.ib-green{background:rgba(45,198,83,0.07);border:1px solid rgba(45,198,83,0.18);color:var(--text);}
+.ib-red{background:rgba(230,57,70,0.07);border:1px solid rgba(230,57,70,0.18);color:var(--text);}
+.ib-yellow{background:rgba(255,214,10,0.07);border:1px solid rgba(255,214,10,0.18);color:var(--text);}
+/* FOOTER */
+footer{background:var(--dark2);border-top:1px solid var(--border);padding:2.5rem 5%;text-align:center;}
+footer p{color:var(--muted);font-size:0.82rem;}
+footer a{color:var(--green);text-decoration:none;}
+/* CHATBOT */
+.gm-chat-bubble{position:fixed;bottom:2rem;right:2rem;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#e63946,#c1121f);display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;z-index:8000;box-shadow:0 4px 22px rgba(230,57,70,0.5);border:none;transition:transform 0.2s;}.gm-chat-bubble:hover{transform:scale(1.1);}.gm-chat-panel{position:fixed;bottom:5.2rem;right:2rem;width:340px;max-height:500px;background:#16161e;border:1px solid rgba(255,255,255,0.08);border-radius:20px;display:flex;flex-direction:column;z-index:8000;box-shadow:0 24px 80px rgba(0,0,0,0.6);transform:scale(0.9) translateY(20px);opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);}.gm-chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}.gm-chat-head{padding:0.9rem 1.15rem;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.7rem;background:linear-gradient(135deg,rgba(230,57,70,0.15),rgba(45,198,83,0.05));border-radius:20px 20px 0 0;}.gm-chat-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#e63946,#2dc653);display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0;}.gm-chat-info{flex:1;}.gm-chat-info strong{display:block;font-size:0.86rem;color:#e8e8f0;}.gm-chat-info span{font-size:0.68rem;color:#2dc653;}.gm-chat-close{background:none;border:none;color:#888899;cursor:pointer;font-size:1.1rem;padding:0.2rem;}.gm-chat-messages{flex:1;overflow-y:auto;padding:0.9rem;display:flex;flex-direction:column;gap:0.65rem;min-height:180px;max-height:295px;}.gm-msg{max-width:82%;padding:0.6rem 0.85rem;border-radius:14px;font-size:0.82rem;line-height:1.5;word-break:break-word;}.gm-msg.bot{background:rgba(255,255,255,0.06);color:#e8e8f0;border-bottom-left-radius:4px;align-self:flex-start;}.gm-msg.user{background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;border-bottom-right-radius:4px;align-self:flex-end;}.gm-typing-dots{display:inline-flex;gap:3px;align-items:center;}.gm-typing-dots span{width:5px;height:5px;background:#888899;border-radius:50%;animation:tB 1.2s infinite;}.gm-typing-dots span:nth-child(2){animation-delay:0.2s;}.gm-typing-dots span:nth-child(3){animation-delay:0.4s;}@keyframes tB{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}.gm-quick-chips{display:flex;flex-wrap:wrap;gap:0.35rem;padding:0 0.9rem 0.45rem;}.gm-chip{padding:0.27rem 0.62rem;border-radius:50px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#888899;font-size:0.7rem;cursor:pointer;transition:all 0.2s;}.gm-chip:hover{border-color:#2dc653;color:#2dc653;}.gm-chat-input-row{padding:0.65rem 0.9rem;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:0.45rem;}.gm-chat-input{flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;padding:0.52rem 0.75rem;color:#e8e8f0;font-family:'Space Grotesk',sans-serif;font-size:0.8rem;outline:none;transition:border-color 0.2s;}.gm-chat-input:focus{border-color:#2dc653;}.gm-chat-input::placeholder{color:#555566;}.gm-chat-send{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.82rem;transition:all 0.2s;flex-shrink:0;align-self:center;}.gm-chat-send:disabled{opacity:0.4;cursor:not-allowed;}.gm-wa-link{color:#25d366;text-decoration:none;font-weight:600;}@media(max-width:480px){.gm-chat-panel{width:calc(100vw - 1.5rem);right:0.75rem;}.gm-chat-bubble{right:1rem;}}
+@media(max-width:768px){.layout{grid-template-columns:1fr;}.toc{display:none;}.nav-right .btn-nav,.nav-right a:not(.btn-nav){display:none;}.hamburger{display:flex;}}
+</style>
+</head>
+<body>
+<div class="mob-overlay" id="mobOverlay" onclick="closeMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" class="mob-logo"><img src="logo.png" alt=""/><span>GhostMessage</span></a>
+  <a href="index.html" class="mob-link" onclick="closeMenu()">Home</a>
+  <a href="privacy.html" class="mob-link" onclick="closeMenu()">Privacy Policy</a>
+  <a href="login.html" class="mob-link" onclick="closeMenu()">Log In</a>
+  <div class="mob-cta"><a href="signup.html" class="btn-m btn-red">Sign Up Free</a></div>
+</div>
+<nav>
+  <a href="index.html" class="nav-logo"><img src="logo.png" alt="GhostMessage"/><span>GhostMessage</span></a>
+  <div class="nav-right">
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="login.html">Log In</a>
+    <a href="signup.html" class="btn-nav">Sign Up Free</a>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-hero">
+  <div class="badge">📜 Legal</div>
+  <h1>Terms of Service</h1>
+  <p>Please read these terms carefully before using GhostMessage. By creating an account or using our platform, you agree to these terms.</p>
+  <span class="last-updated">Last updated: June 2025</span>
+</div>
+
+<div class="layout">
+  <!-- TOC -->
+  <div class="toc">
+    <h4>Jump To</h4>
+    <ul>
+      <li><a href="#acceptance">Acceptance</a></li>
+      <li><a href="#service">The Service</a></li>
+      <li><a href="#accounts">User Accounts</a></li>
+      <li><a href="#conduct">Acceptable Use</a></li>
+      <li><a href="#content">User Content</a></li>
+      <li><a href="#privacy">Privacy</a></li>
+      <li><a href="#disclaimer">Disclaimer</a></li>
+      <li><a href="#termination">Termination</a></li>
+      <li><a href="#changes">Changes</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="doc-content">
+
+    <div class="doc-sec" id="acceptance">
+      <h2><span>✅</span> 1. Acceptance of Terms</h2>
+      <p>By accessing or using GhostMessage ("the Platform", "we", "us"), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, you must not use the platform.</p>
+      <p>GhostMessage is a product of <strong>Ibratech</strong>, developed by <strong>Ibrahim Mohammed Lotsu</strong>, based in Accra, Ghana.</p>
+      <div class="info-box ib-green"><span class="ib-ic">💡</span><div>These terms apply to all visitors, users, and others who access or use the platform. Using GhostMessage = agreeing to these terms.</div></div>
+    </div>
+
+    <div class="doc-sec" id="service">
+      <h2><span>👻</span> 2. Description of Service</h2>
+      <p>GhostMessage is an anonymous messaging platform that allows users to:</p>
+      <ul>
+        <li>Create a personal account with a username and password</li>
+        <li>Generate a unique anonymous message link</li>
+        <li>Share that link to receive anonymous messages from others</li>
+        <li>Read, manage, and delete received messages from a personal dashboard</li>
+      </ul>
+      <p>The platform is provided <strong>as-is</strong>. We reserve the right to modify, suspend, or discontinue any aspect of the service at any time without notice.</p>
+      <div class="info-box ib-yellow"><span class="ib-ic">⚠️</span><div>GhostMessage currently stores data in your browser's local storage. Data may be lost if you clear your browser data. We are not liable for any data loss.</div></div>
+    </div>
+
+    <div class="doc-sec" id="accounts">
+      <h2><span>👤</span> 3. User Accounts</h2>
+      <p>To use GhostMessage's core features, you must create an account. When creating an account:</p>
+      <ul>
+        <li>You must choose a unique username (3–20 characters, letters/numbers/underscores)</li>
+        <li>You are responsible for maintaining the confidentiality of your password</li>
+        <li>You must be at least <strong>13 years of age</strong> to use this platform</li>
+        <li>One person may not maintain multiple accounts for abusive purposes</li>
+        <li>You are responsible for all activity that occurs under your account</li>
+      </ul>
+      <p>You may delete your account at any time from the Settings page. Upon deletion, all your messages and profile data will be permanently removed.</p>
+    </div>
+
+    <div class="doc-sec" id="conduct">
+      <h2><span>🛡️</span> 4. Acceptable Use Policy</h2>
+      <p>You agree <strong>NOT</strong> to use GhostMessage to:</p>
+      <ul>
+        <li>Send harassing, threatening, abusive, or defamatory messages</li>
+        <li>Send messages containing hate speech based on race, ethnicity, religion, gender, sexual orientation, or disability</li>
+        <li>Spam or send unsolicited bulk messages</li>
+        <li>Impersonate any person or entity</li>
+        <li>Distribute malware, viruses, or harmful code</li>
+        <li>Engage in any activity that is illegal under Ghanaian law or international law</li>
+        <li>Attempt to reverse-engineer, hack, or disrupt the platform</li>
+        <li>Use automated tools to send messages or create accounts</li>
+      </ul>
+      <div class="info-box ib-red"><span class="ib-ic">🚨</span><div>Violation of the Acceptable Use Policy may result in immediate account termination without notice. In serious cases, we may report abuse to relevant authorities.</div></div>
+    </div>
+
+    <div class="doc-sec" id="content">
+      <h2><span>💬</span> 5. User Content</h2>
+      <p>GhostMessage allows users to send text messages. You retain ownership of any content you create. However, by using the platform, you acknowledge that:</p>
+      <ul>
+        <li>You are solely responsible for messages you send</li>
+        <li>GhostMessage does not moderate messages in real-time</li>
+        <li>GhostMessage is not responsible for the content of anonymous messages received</li>
+        <li>Message recipients have the right to delete any message at any time</li>
+        <li>Senders cannot retrieve or edit a message once it has been sent</li>
+      </ul>
+      <p>GhostMessage operates on a best-effort basis to prevent spam through cooldown mechanisms, but cannot guarantee complete protection from unwanted content.</p>
+    </div>
+
+    <div class="doc-sec" id="privacy">
+      <h2><span>🔒</span> 6. Privacy & Anonymity</h2>
+      <p>GhostMessage is designed to protect sender anonymity. We commit to:</p>
+      <ul>
+        <li>Never revealing the identity of message senders to recipients</li>
+        <li>Not selling user data to third parties</li>
+        <li>Storing all data locally in the user's browser (no central server)</li>
+      </ul>
+      <p>Please read our full <a href="privacy.html">Privacy Policy</a> for complete details on how we handle your data.</p>
+      <div class="info-box ib-green"><span class="ib-ic">🔐</span><div>Sender anonymity is the core promise of GhostMessage. We take this commitment seriously and our technical design reflects that.</div></div>
+    </div>
+
+    <div class="doc-sec" id="disclaimer">
+      <h2><span>⚠️</span> 7. Disclaimer of Warranties</h2>
+      <p>GhostMessage is provided <strong>"as is" and "as available"</strong> without any warranties of any kind, either express or implied, including but not limited to:</p>
+      <ul>
+        <li>Warranties of merchantability or fitness for a particular purpose</li>
+        <li>Warranties that the service will be uninterrupted, secure, or error-free</li>
+        <li>Warranties regarding the accuracy of any content</li>
+      </ul>
+      <p>Ibratech and Ibrahim Mohammed Lotsu shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the platform.</p>
+    </div>
+
+    <div class="doc-sec" id="termination">
+      <h2><span>🚪</span> 8. Termination</h2>
+      <p>We reserve the right to terminate or suspend access to the platform immediately, without prior notice, for any reason including, but not limited to:</p>
+      <ul>
+        <li>Violation of these Terms of Service</li>
+        <li>Conduct that is harmful to other users or to GhostMessage</li>
+        <li>Requests by law enforcement or government agencies</li>
+      </ul>
+      <p>You may also terminate your account at any time from the Settings page. Upon termination, your right to use the service will cease immediately.</p>
+    </div>
+
+    <div class="doc-sec" id="changes">
+      <h2><span>🔄</span> 9. Changes to Terms</h2>
+      <p>We reserve the right to modify these terms at any time. We will notify users of significant changes by updating the "Last Updated" date at the top of this page. Continued use of the platform after changes constitutes acceptance of the new terms.</p>
+      <p>We encourage you to review these terms periodically to stay informed of any updates.</p>
+    </div>
+
+    <div class="doc-sec" id="contact">
+      <h2><span>📞</span> 10. Contact Us</h2>
+      <p>If you have any questions about these Terms of Service, please contact us:</p>
+      <ul>
+        <li><strong>Developer:</strong> Ibrahim Mohammed Lotsu (Ibratech)</li>
+        <li><strong>WhatsApp:</strong> <a href="https://wa.me/233554196068" target="_blank">+233 554 196 068</a></li>
+        <li><strong>Portfolio:</strong> <a href="https://ibratech-dev.vercel.app" target="_blank">ibratech-dev.vercel.app</a></li>
+        <li><strong>Country:</strong> Ghana 🇬🇭</li>
+      </ul>
+      <div class="info-box ib-green"><span class="ib-ic">💬</span><div>We're always happy to hear from users. For fastest response, reach us on WhatsApp at <a href="https://wa.me/233554196068" target="_blank" style="color:#25d366;font-weight:600;">+233 554 196 068</a>.</div></div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 GhostMessage · Built by <a href="https://wa.me/233554196068">Ibratech</a> · Ibrahim Mohammed Lotsu · Ghana 🇬🇭</p>
+  <p style="margin-top:0.5rem;"><a href="index.html">Home</a> · <a href="privacy.html">Privacy Policy</a> · <a href="signup.html">Sign Up</a></p>
+</footer>
+
+<button class="gm-chat-bubble" id="gmChatBubble" onclick="gmToggleChat()">👻</button>
+<div class="gm-chat-panel" id="gmChatPanel">
+  <div class="gm-chat-head"><div class="gm-chat-avatar">👻</div><div class="gm-chat-info"><strong>GhostBot</strong><span>● Online</span></div><button class="gm-chat-close" onclick="gmToggleChat()">✕</button></div>
+  <div class="gm-chat-messages" id="gmMessages"></div>
+  <div class="gm-quick-chips" id="gmChips">
+    <span class="gm-chip" onclick="gmSendChip(this)">Can I use GhostMessage under 13?</span>
+    <span class="gm-chip" onclick="gmSendChip(this)">What's not allowed?</span>
+    <span class="gm-chip" onclick="gmSendChip(this)">How is my data stored?</span>
+  </div>
+  <div class="gm-chat-input-row"><input class="gm-chat-input" id="gmChatInput" placeholder="Ask GhostBot..." maxlength="300" onkeydown="if(event.key==='Enter')gmSend()"/><button class="gm-chat-send" id="gmSendBtn" onclick="gmSend()">➤</button></div>
+</div>
+
+<script>
+// TOC HIGHLIGHT
+const secs=document.querySelectorAll('.doc-sec');
+const tocLinks=document.querySelectorAll('.toc a');
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){tocLinks.forEach(l=>l.classList.remove('active'));const lnk=document.querySelector('.toc a[href="#'+e.target.id+'"]');if(lnk)lnk.classList.add('active');}});},{rootMargin:'-15% 0px -75% 0px'});
+secs.forEach(s=>obs.observe(s));
+// MOBILE MENU
+function toggleMenu(){const o=document.getElementById('mobileMenu').classList.toggle('open');document.getElementById('mobOverlay').classList.toggle('show',o);document.getElementById('hamburger').classList.toggle('open',o);}
+function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');document.getElementById('mobOverlay').classList.remove('show');document.getElementById('hamburger').classList.remove('open');}
+// CHATBOT
+(function(){let o=false,h=[],busy=false;const SYS=`You are GhostBot, friendly AI for GhostMessage by Ibratech (Ibrahim Mohammed Lotsu), Ghana. Answer questions about the Terms of Service and GhostMessage platform warmly. Key points: platform is for 13+, no hate speech/harassment, sender anonymity guaranteed, data stored in browser localStorage, developer contact is WhatsApp +233554196068. If you cannot help, redirect nicely to WhatsApp. Short answers (2-4 sentences).`;
+window.gmToggleChat=function(){o=!o;document.getElementById('gmChatPanel').classList.toggle('open',o);document.getElementById('gmChatBubble').textContent=o?'✕':'👻';if(o&&h.length===0)setTimeout(()=>add('bot',"Hey! 👻 I'm GhostBot. Have questions about our Terms of Service or GhostMessage in general? Ask me!"),300);if(o)setTimeout(()=>document.getElementById('gmChatInput').focus(),400);};
+window.gmSendChip=function(el){const t=el.textContent;document.getElementById('gmChips').style.display='none';add('user',t);call(t);};
+window.gmSend=function(){const inp=document.getElementById('gmChatInput');const t=inp.value.trim();if(!t||busy)return;inp.value='';document.getElementById('gmChips').style.display='none';add('user',t);call(t);};
+function add(r,text){const d=document.createElement('div');d.className='gm-msg '+r;d.innerHTML=text;document.getElementById('gmMessages').appendChild(d);document.getElementById('gmMessages').scrollTop=99999;return d;}
+async function call(msg){busy=true;document.getElementById('gmSendBtn').disabled=true;h.push({role:'user',content:msg});const tEl=document.createElement('div');tEl.className='gm-msg bot';tEl.innerHTML='<div class="gm-typing-dots"><span></span><span></span><span></span></div>';document.getElementById('gmMessages').appendChild(tEl);document.getElementById('gmMessages').scrollTop=99999;
+try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:SYS,messages:h})});const data=await r.json();const reply=data.content&&data.content[0]?data.content[0].text:"Having trouble 👻 <a class='gm-wa-link' href='https://wa.me/233554196068' target='_blank'>Reach Ibrahim</a>";tEl.remove();const fmt=reply.replace(/https:\/\/wa\.me\/\S+/g,u=>`<a class='gm-wa-link' href='${u}' target='_blank'>${u}</a>`);add('bot',fmt);h.push({role:'assistant',content:reply});if(h.length>20)h=h.slice(-16);}catch(e){tEl.remove();add('bot',"Error 👻 <a class='gm-wa-link' href='https://wa.me/233554196068' target='_blank'>Chat with Ibrahim</a>");}
+busy=false;document.getElementById('gmSendBtn').disabled=false;}})();
+</script>
+</body>
+</html>

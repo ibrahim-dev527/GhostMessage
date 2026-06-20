@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Log In — GhostMessage</title>
+<link rel="icon" href="logo.png" type="image/png"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================================================
+   SUPABASE CONFIG — PASTE YOUR KEYS HERE
+   ============================================================ */
+const SUPABASE_URL = "https://akadqjijkasftwbtwayc.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYWRxamlqa2FzZnR3YnR3YXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NDI0NzgsImV4cCI6MjA5NzMxODQ3OH0.9AgKcEtYLck2zRJ___ZG0oNYO6y03BrBUcGuwC2zVCc";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+:root{--red:#e63946;--green:#2dc653;--yellow:#ffd60a;--dark:#0a0a0f;--dark2:#111118;--dark3:#1a1a24;--card:#16161e;--border:rgba(255,255,255,0.08);--text:#e8e8f0;--muted:#888899;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.bg-anim{position:fixed;inset:0;z-index:0;overflow:hidden;}
+.bg-blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.1;animation:bM 8s ease-in-out infinite alternate;}
+.bg-blob:nth-child(1){width:600px;height:600px;background:var(--green);top:-200px;right:-100px;}
+.bg-blob:nth-child(2){width:400px;height:400px;background:var(--red);bottom:-100px;left:-100px;animation-delay:3s;}
+@keyframes bM{0%{transform:translate(0,0);}100%{transform:translate(20px,30px);}}
+/* NAV + LEFT MENU */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(10,10,15,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:0.6rem;text-decoration:none;}
+.nav-logo img{height:32px;}
+.nav-logo span{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;background:linear-gradient(90deg,var(--red),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hamburger{display:flex;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:0.25rem;z-index:600;}
+.hamburger span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:all 0.35s cubic-bezier(0.23,1,0.32,1);}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:490;}
+.mob-overlay.show{display:block;}
+.mobile-menu{position:fixed;top:0;left:0;bottom:0;width:280px;background:var(--dark2);border-right:1px solid var(--border);z-index:495;display:flex;flex-direction:column;padding:2rem 1.5rem;transform:translateX(-100%);transition:transform 0.35s cubic-bezier(0.23,1,0.32,1);}
+.mobile-menu.open{transform:translateX(0);}
+.mob-logo{display:flex;align-items:center;gap:0.6rem;margin-bottom:2.5rem;text-decoration:none;}
+.mob-logo img{height:32px;}
+.mob-logo span{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;background:linear-gradient(90deg,var(--red),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.mob-link{display:block;padding:0.85rem 0;color:var(--muted);text-decoration:none;font-size:1rem;font-weight:500;border-bottom:1px solid var(--border);transition:color 0.2s;}
+.mob-link:hover{color:var(--text);}
+.mob-cta{margin-top:2rem;display:flex;flex-direction:column;gap:0.75rem;}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:0.65rem 1.3rem;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;border:none;text-decoration:none;transition:all 0.3s;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+.btn-red{background:linear-gradient(135deg,var(--red),#c1121f);color:#fff;}
+/* GHOST PARTICLES */
+.gp{position:fixed;pointer-events:none;font-size:1.5rem;opacity:0;animation:gpA 10s linear infinite;}
+@keyframes gpA{0%{transform:translateY(100vh) rotate(0deg);opacity:0;}10%{opacity:0.1;}90%{opacity:0.05;}100%{transform:translateY(-100px) rotate(360deg);opacity:0;}}
+/* PAGE */
+.page{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6rem 1.5rem 3rem;}
+.login-card{width:100%;max-width:460px;background:rgba(22,22,30,0.95);border:1px solid var(--border);border-radius:24px;padding:2.75rem 2.5rem;backdrop-filter:blur(20px);box-shadow:0 24px 80px rgba(0,0,0,0.5);animation:cIn 0.55s cubic-bezier(0.175,0.885,0.32,1.275) forwards;}
+@keyframes cIn{from{opacity:0;transform:translateY(30px) scale(0.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.logo-area{text-align:center;margin-bottom:2.25rem;}
+.logo-area img{height:60px;margin-bottom:1rem;filter:drop-shadow(0 0 14px rgba(255,255,255,0.12));}
+.logo-area h2{font-family:'Syne',sans-serif;font-size:1.65rem;font-weight:800;margin-bottom:0.3rem;}
+.logo-area p{color:var(--muted);font-size:0.86rem;}
+.demo-tip{background:rgba(255,214,10,0.07);border:1px solid rgba(255,214,10,0.22);border-radius:10px;padding:0.7rem 0.95rem;margin-bottom:1.5rem;font-size:0.78rem;color:var(--yellow);display:flex;align-items:flex-start;gap:0.5rem;}
+.demo-tip a{color:var(--yellow);font-weight:600;}
+.fg{margin-bottom:1.2rem;}
+.fg label{display:block;font-size:0.82rem;font-weight:600;margin-bottom:0.45rem;}
+.iw{position:relative;}
+.ii{position:absolute;left:1rem;top:50%;transform:translateY(-50%);font-size:0.95rem;color:var(--muted);}
+.toggle-pw{position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.82rem;transition:color 0.2s;}
+.toggle-pw:hover{color:var(--text);}
+.fg input{width:100%;padding:0.82rem 3rem 0.82rem 2.7rem;background:var(--card);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:0.92rem;outline:none;transition:all 0.3s;}
+.fg input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(45,198,83,0.1);}
+.fg.err input{border-color:var(--red);}
+.errmsg{font-size:0.73rem;color:var(--red);margin-top:0.35rem;display:none;}
+.fg.err .errmsg{display:block;}
+.remember-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+.remember-row label{display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;color:var(--muted);cursor:pointer;}
+.remember-row input[type=checkbox]{accent-color:var(--green);width:14px;height:14px;}
+.forgot{font-size:0.8rem;color:var(--green);cursor:pointer;background:none;border:none;font-family:'Space Grotesk',sans-serif;transition:opacity 0.2s;}
+.forgot:hover{opacity:0.7;}
+.login-btn{width:100%;padding:0.9rem;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--green),#1a9e3f);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:0.97rem;font-weight:700;transition:all 0.3s;}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(45,198,83,0.5);}
+.login-btn:disabled{opacity:0.55;cursor:not-allowed;transform:none;}
+.spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;}
+.login-btn.loading .bt{display:none;}.login-btn.loading .spinner{display:block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.divider{display:flex;align-items:center;gap:1rem;margin:1.4rem 0;color:var(--muted);font-size:0.78rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.signup-link{text-align:center;font-size:0.88rem;color:var(--muted);}
+.signup-link a{color:var(--red);text-decoration:none;font-weight:600;}
+.back-home{display:block;text-align:center;margin-top:1.25rem;color:var(--muted);text-decoration:none;font-size:0.8rem;transition:color 0.2s;}
+.back-home:hover{color:var(--text);}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.4rem;display:flex;align-items:center;gap:0.7rem;z-index:9998;min-width:260px;transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+/* FORGOT MODAL */
+.mod-bg{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:8888;display:none;align-items:center;justify-content:center;}
+.mod-bg.show{display:flex;}
+.mod-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;max-width:360px;width:90%;animation:cIn 0.35s ease;}
+.mod-box h3{font-family:'Syne',sans-serif;font-size:1.25rem;margin-bottom:0.5rem;}
+.mod-box p{color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;line-height:1.6;}
+.mod-close{width:100%;padding:0.7rem;border-radius:10px;border:1px solid var(--border);background:var(--dark3);color:var(--text);cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:0.88rem;}
+/* CHATBOT */
+.gm-chat-bubble{position:fixed;bottom:2rem;right:2rem;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#e63946,#c1121f);display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;z-index:8000;box-shadow:0 4px 24px rgba(230,57,70,0.5);border:none;transition:transform 0.2s;}.gm-chat-bubble:hover{transform:scale(1.1);}.gm-chat-panel{position:fixed;bottom:5.5rem;right:2rem;width:340px;max-height:500px;background:#16161e;border:1px solid rgba(255,255,255,0.08);border-radius:20px;display:flex;flex-direction:column;z-index:8000;box-shadow:0 24px 80px rgba(0,0,0,0.6);transform:scale(0.9) translateY(20px);opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);}.gm-chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}.gm-chat-head{padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.75rem;background:linear-gradient(135deg,rgba(230,57,70,0.15),rgba(45,198,83,0.05));border-radius:20px 20px 0 0;}.gm-chat-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#e63946,#2dc653);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}.gm-chat-info{flex:1;}.gm-chat-info strong{display:block;font-size:0.88rem;color:#e8e8f0;}.gm-chat-info span{font-size:0.7rem;color:#2dc653;}.gm-chat-close{background:none;border:none;color:#888899;cursor:pointer;font-size:1.1rem;padding:0.2rem;}.gm-chat-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.7rem;min-height:180px;max-height:300px;}.gm-msg{max-width:82%;padding:0.6rem 0.85rem;border-radius:14px;font-size:0.82rem;line-height:1.5;word-break:break-word;}.gm-msg.bot{background:rgba(255,255,255,0.06);color:#e8e8f0;border-bottom-left-radius:4px;align-self:flex-start;}.gm-msg.user{background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;border-bottom-right-radius:4px;align-self:flex-end;}.gm-typing-dots{display:inline-flex;gap:3px;align-items:center;}.gm-typing-dots span{width:5px;height:5px;background:#888899;border-radius:50%;animation:tB 1.2s infinite;}.gm-typing-dots span:nth-child(2){animation-delay:0.2s;}.gm-typing-dots span:nth-child(3){animation-delay:0.4s;}@keyframes tB{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}.gm-quick-chips{display:flex;flex-wrap:wrap;gap:0.35rem;padding:0 1rem 0.5rem;}.gm-chip{padding:0.28rem 0.65rem;border-radius:50px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#888899;font-size:0.72rem;cursor:pointer;transition:all 0.2s;}.gm-chip:hover{border-color:#2dc653;color:#2dc653;}.gm-chat-input-row{padding:0.7rem 1rem;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:0.5rem;}.gm-chat-input{flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;padding:0.55rem 0.8rem;color:#e8e8f0;font-family:'Space Grotesk',sans-serif;font-size:0.82rem;outline:none;transition:border-color 0.2s;}.gm-chat-input:focus{border-color:#2dc653;}.gm-chat-input::placeholder{color:#555566;}.gm-chat-send{width:34px;height:34px;border-radius:8px;border:none;cursor:pointer;background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.85rem;transition:all 0.2s;flex-shrink:0;align-self:center;}.gm-chat-send:disabled{opacity:0.4;cursor:not-allowed;}.gm-wa-link{color:#25d366;text-decoration:none;font-weight:600;}@media(max-width:480px){.gm-chat-panel{width:calc(100vw - 2rem);right:1rem;}.gm-chat-bubble{right:1rem;bottom:1.5rem;}}
+</style>
+</head>
+<body>
+<div class="bg-anim"><div class="bg-blob"></div><div class="bg-blob"></div></div>
+<span class="gp" style="left:5%;animation-delay:0s;animation-duration:12s;">👻</span>
+<span class="gp" style="left:25%;animation-delay:3s;animation-duration:9s;">💬</span>
+<span class="gp" style="left:60%;animation-delay:6s;animation-duration:14s;">🔮</span>
+<span class="gp" style="left:85%;animation-delay:2s;animation-duration:11s;">✉️</span>
+<div class="toast" id="toast"><span id="toastIcon">👻</span><span id="toastMsg">Welcome back!</span></div>
+<div class="mod-bg" id="forgotMod">
+  <div class="mod-box">
+    <h3>🔑 Forgot Password?</h3>
+    <p>GhostMessage doesn't require email, so we can't send a reset link.<br><br>Try common passwords, or create a new account — it takes 30 seconds!</p>
+    <a href="signup.html" style="display:block;background:linear-gradient(135deg,var(--red),#c1121f);color:#fff;text-align:center;padding:0.7rem;border-radius:10px;text-decoration:none;font-weight:600;font-size:0.88rem;margin-bottom:0.75rem;">Create New Account</a>
+    <button class="mod-close" onclick="document.getElementById('forgotMod').classList.remove('show')">← Back to Login</button>
+  </div>
+</div>
+<div class="mob-overlay" id="mobOverlay" onclick="closeMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" class="mob-logo"><img src="logo.png" alt=""/><span>GhostMessage</span></a>
+  <a href="index.html" class="mob-link" onclick="closeMenu()">Home</a>
+  <a href="signup.html" class="mob-link" onclick="closeMenu()">Sign Up</a>
+  <div class="mob-cta"><a href="signup.html" class="btn btn-red">Create Account</a></div>
+</div>
+<nav>
+  <a href="index.html" class="nav-logo"><img src="logo.png" alt="GhostMessage"/><span>GhostMessage</span></a>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+</nav>
+<div class="page">
+  <div class="login-card">
+    <div class="logo-area">
+      <img src="logo.png" alt="GhostMessage"/>
+      <h2>Welcome back 👻</h2>
+      <p>Log in to check your anonymous messages</p>
+    </div>
+    <div class="demo-tip">💡 <span>New? You don't need email. <a href="signup.html">Sign up free →</a></span></div>
+    <div class="fg" id="g-user">
+      <label for="username">Username</label>
+      <div class="iw"><span class="ii">👤</span><input type="text" id="username" placeholder="your username" autocomplete="username" autocorrect="off" autocapitalize="none"/></div>
+      <div class="errmsg" id="e-user">Please enter your username.</div>
+    </div>
+    <div class="fg" id="g-pw">
+      <label for="pw">Password</label>
+      <div class="iw"><span class="ii">🔑</span><input type="password" id="pw" placeholder="your password" autocomplete="current-password"/><button class="toggle-pw" id="tPw" type="button" onclick="togglePw()">Show</button></div>
+      <div class="errmsg" id="e-pw">Incorrect username or password.</div>
+    </div>
+    <div class="remember-row">
+      <label><input type="checkbox" id="remember"/> Remember me</label>
+      <button class="forgot" onclick="document.getElementById('forgotMod').classList.add('show')">Forgot password?</button>
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()"><span class="bt">Log In to My Account</span><div class="spinner"></div></button>
+    <div class="divider">or</div>
+    <div class="signup-link">No account? <a href="signup.html">Sign up free →</a></div>
+    <a href="index.html" class="back-home">← Back to Home</a>
+  </div>
+</div>
+<button class="gm-chat-bubble" id="gmChatBubble" onclick="gmToggleChat()" title="Ask GhostBot">👻</button>
+<div class="gm-chat-panel" id="gmChatPanel">
+  <div class="gm-chat-head"><div class="gm-chat-avatar">👻</div><div class="gm-chat-info"><strong>GhostBot</strong><span>● Online</span></div><button class="gm-chat-close" onclick="gmToggleChat()">✕</button></div>
+  <div class="gm-chat-messages" id="gmMessages"></div>
+  <div class="gm-quick-chips" id="gmChips">
+    <span class="gm-chip" onclick="gmSendChip(this)">I forgot my password</span>
+    <span class="gm-chip" onclick="gmSendChip(this)">How do I log in?</span>
+    <span class="gm-chip" onclick="gmSendChip(this)">What is GhostMessage?</span>
+  </div>
+  <div class="gm-chat-input-row"><input class="gm-chat-input" id="gmChatInput" placeholder="Ask GhostBot..." maxlength="300" onkeydown="if(event.key==='Enter')gmSend()"/><button class="gm-chat-send" id="gmSendBtn" onclick="gmSend()">➤</button></div>
+</div>
+<script>
+function toggleMenu(){const o=document.getElementById('mobileMenu').classList.toggle('open');document.getElementById('mobOverlay').classList.toggle('show',o);document.getElementById('hamburger').classList.toggle('open',o);}
+function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');document.getElementById('mobOverlay').classList.remove('show');document.getElementById('hamburger').classList.remove('open');}
+function showToast(msg,icon='👻'){document.getElementById('toastMsg').textContent=msg;document.getElementById('toastIcon').textContent=icon;const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+function togglePw(){const i=document.getElementById('pw');const b=document.getElementById('tPw');i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'Show':'Hide';}
+// Pre-fill remembered
+window.addEventListener('DOMContentLoaded',()=>{
+  const r=localStorage.getItem('gm_remember');if(r){try{const p=JSON.parse(r);document.getElementById('username').value=p.username||'';document.getElementById('remember').checked=true;}catch(e){}}
+  const s=localStorage.getItem('gm_session');if(s){try{const p=JSON.parse(s);if(p.username&&Date.now()-p.loggedAt<7*24*60*60*1000)window.location.href='dashboard.html';}catch(e){}}
+});
+function doLogin(){
+  const u=document.getElementById('username').value.trim().toLowerCase();const p=document.getElementById('pw').value;const rem=document.getElementById('remember').checked;
+  document.querySelectorAll('.fg').forEach(g=>g.classList.remove('err'));
+  if(!u){document.getElementById('g-user').classList.add('err');document.getElementById('e-user').textContent='Please enter your username.';return;}
+  if(!p){document.getElementById('g-pw').classList.add('err');document.getElementById('e-pw').textContent='Please enter your password.';return;}
+  const btn=document.getElementById('loginBtn');btn.classList.add('loading');btn.disabled=true;
+  (async()=>{
+    try{
+      const {data,error}=await sb.rpc('gm_login',{p_username:u,p_password:p});
+      if(error){btn.classList.remove('loading');btn.disabled=false;showToast('Network error. Try again.','❌');console.error(error);return;}
+      if(!data.success){
+        btn.classList.remove('loading');btn.disabled=false;
+        document.getElementById('g-pw').classList.add('err');
+        document.getElementById('e-pw').textContent=data.error;
+        showToast(data.error,'❌');
+        return;
+      }
+      localStorage.setItem('gm_session',JSON.stringify({username:u,password:p,loggedAt:Date.now()}));
+      if(rem)localStorage.setItem('gm_remember',JSON.stringify({username:u}));else localStorage.removeItem('gm_remember');
+      showToast('Welcome back, '+(data.user.display_name||u)+'! 👻','✅');
+      setTimeout(()=>window.location.href='dashboard.html',1200);
+    }catch(err){
+      btn.classList.remove('loading');btn.disabled=false;
+      showToast('Network error. Check your connection.','❌');
+      console.error(err);
+    }
+  })();
+}
+document.querySelectorAll('input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}));
+// CHATBOT
+(function(){let o=false,h=[],busy=false;const SYS=`You are GhostBot, friendly AI for GhostMessage by Ibratech, Ghana. Be warm, witty, ghost-themed. GhostMessage: free signup (username+password), anonymous link, messages on dashboard, spam protection, built with HTML/CSS/JS+localStorage. Developer WhatsApp: +233554196068. If you can't help, redirect to WhatsApp. Keep answers to 2-4 sentences.`;
+window.gmToggleChat=function(){o=!o;document.getElementById('gmChatPanel').classList.toggle('open',o);document.getElementById('gmChatBubble').textContent=o?'✕':'👻';if(o&&h.length===0)setTimeout(()=>add('bot',"Hey! 👻 I'm GhostBot. Having trouble logging in? Or just want to know more about GhostMessage? Ask me!"),300);if(o)setTimeout(()=>document.getElementById('gmChatInput').focus(),400);};
+window.gmSendChip=function(el){const t=el.textContent;document.getElementById('gmChips').style.display='none';add('user',t);call(t);};
+window.gmSend=function(){const inp=document.getElementById('gmChatInput');const t=inp.value.trim();if(!t||busy)return;inp.value='';document.getElementById('gmChips').style.display='none';add('user',t);call(t);};
+function add(role,text){const d=document.createElement('div');d.className='gm-msg '+role;d.innerHTML=text;document.getElementById('gmMessages').appendChild(d);document.getElementById('gmMessages').scrollTop=99999;return d;}
+async function call(msg){busy=true;document.getElementById('gmSendBtn').disabled=true;h.push({role:'user',content:msg});const tEl=document.createElement('div');tEl.className='gm-msg bot';tEl.innerHTML='<div class="gm-typing-dots"><span></span><span></span><span></span></div>';document.getElementById('gmMessages').appendChild(tEl);document.getElementById('gmMessages').scrollTop=99999;
+try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:SYS,messages:h})});const data=await r.json();const reply=data.content&&data.content[0]?data.content[0].text:"I'm having trouble 👻 Reach Ibrahim: <a class='gm-wa-link' href='https://wa.me/233554196068' target='_blank'>WhatsApp</a>";tEl.remove();const fmt=reply.replace(/https:\/\/wa\.me\/\S+/g,u=>`<a class='gm-wa-link' href='${u}' target='_blank'>${u}</a>`);add('bot',fmt);h.push({role:'assistant',content:reply});if(h.length>20)h=h.slice(-16);}catch(e){tEl.remove();add('bot',"Something went wrong 👻 <a class='gm-wa-link' href='https://wa.me/233554196068' target='_blank'>Chat with Ibrahim</a>");}
+busy=false;document.getElementById('gmSendBtn').disabled=false;}})();
+</script>
+</body>
+</html>

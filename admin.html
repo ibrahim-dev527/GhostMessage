@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Control Center — GhostMessage</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="icon" href="logo.png" type="image/png"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================================================
+   SUPABASE CONFIG — PASTE YOUR KEYS HERE
+   ============================================================ */
+const SUPABASE_URL = "https://akadqjijkasftwbtwayc.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYWRxamlqa2FzZnR3YnR3YXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NDI0NzgsImV4cCI6MjA5NzMxODQ3OH0.9AgKcEtYLck2zRJ___ZG0oNYO6y03BrBUcGuwC2zVCc";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--red:#e63946;--green:#2dc653;--yellow:#ffd60a;--dark:#0a0a0f;--dark2:#111118;--dark3:#1a1a24;--card:#16161e;--border:rgba(255,255,255,0.08);--text:#e8e8f0;--muted:#888899;--sb:230px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--dark);}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}
+
+/* ============== LOGIN GATE ============== */
+.gate{position:fixed;inset:0;z-index:9999;background:var(--dark);display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.gate-box{width:100%;max-width:400px;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:2.5rem;text-align:center;animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);}
+@keyframes popIn{from{opacity:0;transform:scale(0.9) translateY(15px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.gate-icon{font-size:3.5rem;margin-bottom:1rem;}
+.gate-box h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:0.4rem;}
+.gate-box p{color:var(--muted);font-size:0.85rem;margin-bottom:1.75rem;}
+.gate-input{width:100%;padding:0.85rem 1rem;background:var(--dark);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:0.95rem;outline:none;margin-bottom:1rem;text-align:center;transition:border-color 0.2s;}
+.gate-input:focus{border-color:var(--red);}
+.gate-input.err{border-color:var(--red);animation:shake 0.4s;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.gate-btn{width:100%;padding:0.85rem;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--red),#c1121f);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:0.95rem;font-weight:700;transition:all 0.3s;}
+.gate-btn:hover{transform:translateY(-1px);box-shadow:0 8px 25px rgba(230,57,70,0.4);}
+.gate-err{color:var(--red);font-size:0.8rem;margin-top:0.75rem;display:none;}
+.gate-err.show{display:block;}
+
+/* ============== APP LAYOUT ============== */
+.app{display:none;}
+.app.show{display:flex;}
+.sidebar{width:var(--sb);min-height:100vh;background:var(--dark2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;}
+.sb-logo{padding:1.5rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.6rem;}
+.sb-logo img{height:30px;}
+.sb-logo div span{display:block;font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;}
+.sb-logo .tag{font-size:0.65rem;color:var(--red);font-weight:700;letter-spacing:0.05em;}
+.sb-nav{flex:1;padding:1rem 0;}
+.nav-item{display:flex;align-items:center;gap:0.7rem;padding:0.75rem 1.25rem;color:var(--muted);font-size:0.86rem;font-weight:500;transition:all 0.2s;cursor:pointer;border:none;background:none;width:100%;text-align:left;border-left:3px solid transparent;}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.04);}
+.nav-item.active{color:var(--red);background:rgba(230,57,70,0.08);border-left-color:var(--red);}
+.nav-icon{font-size:1.05rem;width:20px;text-align:center;flex-shrink:0;}
+.sb-bottom{padding:1rem 1.25rem;border-top:1px solid var(--border);}
+.logout-btn{display:flex;align-items:center;gap:0.7rem;padding:0.7rem 0;color:var(--red);font-size:0.86rem;font-weight:500;cursor:pointer;background:none;border:none;width:100%;}
+.main{margin-left:var(--sb);flex:1;min-height:100vh;}
+.topbar{padding:1.1rem 2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,15,0.85);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50;}
+.topbar h2{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:800;}
+.topbar p{color:var(--muted);font-size:0.8rem;margin-top:0.1rem;}
+.refresh-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.5rem 1rem;color:var(--text);cursor:pointer;font-size:0.82rem;font-family:'Space Grotesk',sans-serif;font-weight:600;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem;}
+.refresh-btn:hover{border-color:var(--green);color:var(--green);}
+.refresh-btn.spinning .ic{animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.content{padding:1.75rem 2rem;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin-bottom:1.75rem;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.4rem;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:-10px;right:-10px;width:70px;height:70px;border-radius:50%;filter:blur(25px);opacity:0.3;}
+.stat-card:nth-child(1)::before{background:var(--red);}
+.stat-card:nth-child(2)::before{background:var(--green);}
+.stat-card:nth-child(3)::before{background:var(--yellow);}
+.stat-card:nth-child(4)::before{background:#9b5de5;}
+.stat-card:nth-child(5)::before{background:#00bbf9;}
+.stat-card:nth-child(6)::before{background:#f15bb5;}
+.stat-icon{font-size:1.4rem;margin-bottom:0.65rem;}
+.stat-num{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;}
+.stat-lbl{font-size:0.78rem;color:var(--muted);margin-top:0.25rem;}
+
+/* TABLE */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.table-toolbar{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;}
+.search-input{flex:1;min-width:180px;padding:0.55rem 0.9rem;background:var(--dark);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:0.85rem;outline:none;}
+.search-input:focus{border-color:var(--red);}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:0.85rem 1.1rem;font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border);background:var(--dark2);}
+td{padding:0.85rem 1.1rem;font-size:0.85rem;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.u-cell{display:flex;align-items:center;gap:0.6rem;}
+.u-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;flex-shrink:0;}
+.u-name{font-weight:600;font-size:0.85rem;}
+.u-handle{font-size:0.72rem;color:var(--muted);}
+.pill{display:inline-block;padding:0.18rem 0.6rem;border-radius:20px;font-size:0.7rem;font-weight:700;}
+.pill-green{background:rgba(45,198,83,0.12);color:var(--green);}
+.pill-red{background:rgba(230,57,70,0.12);color:var(--red);}
+.pill-muted{background:rgba(255,255,255,0.06);color:var(--muted);}
+.row-acts{display:flex;gap:0.4rem;}
+.racts-btn{background:none;border:1px solid var(--border);border-radius:7px;padding:0.32rem 0.65rem;cursor:pointer;font-size:0.72rem;color:var(--muted);transition:all 0.2s;}
+.racts-btn:hover{border-color:var(--red);color:var(--red);}
+.racts-btn.ban:hover{border-color:var(--yellow);color:var(--yellow);}
+.msg-text-cell{max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.empty-row td{text-align:center;padding:3rem;color:var(--muted);}
+.loading-row td{text-align:center;padding:3rem;color:var(--muted);}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.4rem;display:flex;align-items:center;gap:0.7rem;z-index:9998;min-width:250px;transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);box-shadow:0 8px 30px rgba(0,0,0,0.4);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* CONFIRM MODAL */
+.cm-bg{position:fixed;inset:0;background:rgba(0,0,0,0.72);backdrop-filter:blur(5px);z-index:8000;display:none;align-items:center;justify-content:center;}
+.cm-bg.show{display:flex;}
+.cm-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;max-width:360px;width:90%;text-align:center;animation:popIn 0.3s ease;}
+.cm-box h3{font-family:'Syne',sans-serif;font-size:1.15rem;margin-bottom:0.45rem;}
+.cm-box p{color:var(--muted);font-size:0.83rem;margin-bottom:1.4rem;}
+.cm-btns{display:flex;gap:0.65rem;}
+.cm-cancel{flex:1;padding:0.7rem;border-radius:10px;border:1px solid var(--border);background:var(--dark3);color:var(--text);cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:0.88rem;font-weight:600;}
+.cm-ok{flex:1;padding:0.7rem;border-radius:10px;border:none;background:linear-gradient(135deg,var(--red),#c1121f);color:#fff;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:0.88rem;font-weight:700;}
+
+/* SETTINGS PANEL */
+.sec{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.85rem;margin-bottom:1.35rem;max-width:520px;}
+.sec h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.3rem;}
+.sec-desc{color:var(--muted);font-size:0.8rem;margin-bottom:1.6rem;padding-bottom:1.1rem;border-bottom:1px solid var(--border);}
+.fg{margin-bottom:1.15rem;}
+.fg label{display:block;font-size:0.81rem;font-weight:600;margin-bottom:0.45rem;}
+.fg input{width:100%;padding:0.78rem 1rem;background:var(--dark);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:0.88rem;outline:none;transition:all 0.3s;}
+.fg input:focus{border-color:var(--green);}
+.btn-save{padding:0.75rem 1.8rem;border-radius:11px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--green),#1a9e3f);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:0.92rem;font-weight:700;transition:all 0.3s;}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 7px 22px rgba(45,198,83,0.4);}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:transform 0.3s;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .mob-toggle{display:block !important;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  table{font-size:0.78rem;}
+}
+.mob-toggle{display:none;background:none;border:none;font-size:1.35rem;cursor:pointer;color:var(--text);}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:99;}
+.sb-overlay.show{display:block;}
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr;}
+  .content{padding:1rem;}
+  .topbar{padding:0.9rem 1rem;}
+  table{display:block;overflow-x:auto;white-space:nowrap;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============== LOGIN GATE ============== -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <div class="gate-icon">🛡️</div>
+    <h2>Admin Control Center</h2>
+    <p>Enter the admin password to access GhostMessage's control panel.</p>
+    <input type="password" class="gate-input" id="gatePw" placeholder="Admin password" onkeydown="if(event.key==='Enter')doAdminLogin()"/>
+    <button class="gate-btn" onclick="doAdminLogin()">Unlock Dashboard 🔓</button>
+    <div class="gate-err" id="gateErr">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toastIcon">👻</span><span id="toastMsg">Done!</span></div>
+
+<!-- CONFIRM MODAL -->
+<div class="cm-bg" id="cmBg">
+  <div class="cm-box">
+    <div style="font-size:2.5rem;margin-bottom:0.6rem;">⚠️</div>
+    <h3 id="cmTitle">Are you sure?</h3>
+    <p id="cmDesc">This cannot be undone.</p>
+    <div class="cm-btns"><button class="cm-cancel" onclick="document.getElementById('cmBg').classList.remove('show')">Cancel</button><button class="cm-ok" id="cmOk">Confirm</button></div>
+  </div>
+</div>
+
+<div class="sb-overlay" id="sbOverlay" onclick="closeSB()"></div>
+
+<!-- ============== APP ============== -->
+<div class="app" id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <img src="logo.png" alt=""/>
+      <div><span>GhostMessage</span><span class="tag">ADMIN</span></div>
+    </div>
+    <nav class="sb-nav">
+      <button class="nav-item active" onclick="showTab('overview',this)"><span class="nav-icon">📊</span>Overview</button>
+      <button class="nav-item" onclick="showTab('users',this)"><span class="nav-icon">👥</span>Users</button>
+      <button class="nav-item" onclick="showTab('messages',this)"><span class="nav-icon">📨</span>Messages</button>
+      <button class="nav-item" onclick="showTab('settings',this)"><span class="nav-icon">⚙️</span>Admin Settings</button>
+    </nav>
+    <div class="sb-bottom">
+      <button class="logout-btn" onclick="doAdminLogout()"><span>🚪</span>Lock Dashboard</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h2 id="pageTitle">Overview</h2>
+        <p id="pageSub">Real-time platform statistics</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <button class="refresh-btn" id="refreshBtn" onclick="refreshAll()"><span class="ic">🔄</span>Refresh</button>
+        <button class="mob-toggle" onclick="openSB()">☰</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- OVERVIEW TAB -->
+      <div class="tab-panel active" id="tab-overview">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-num" id="statUsers">—</div><div class="stat-lbl">Total Users</div></div>
+          <div class="stat-card"><div class="stat-icon">📨</div><div class="stat-num" id="statMessages">—</div><div class="stat-lbl">Total Messages</div></div>
+          <div class="stat-card"><div class="stat-icon">🔴</div><div class="stat-num" id="statUnread">—</div><div class="stat-lbl">Unread Messages</div></div>
+          <div class="stat-card"><div class="stat-icon">🔗</div><div class="stat-num" id="statVisits">—</div><div class="stat-lbl">Total Link Visits</div></div>
+          <div class="stat-card"><div class="stat-icon">✨</div><div class="stat-num" id="statSignupsToday">—</div><div class="stat-lbl">Signups Today</div></div>
+          <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-num" id="statMsgsToday">—</div><div class="stat-lbl">Messages Today</div></div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-toolbar"><strong style="font-size:0.88rem;">🆕 Most Recent Users</strong></div>
+          <table>
+            <thead><tr><th>User</th><th>Messages</th><th>Link Visits</th><th>Joined</th></tr></thead>
+            <tbody id="recentUsersBody"><tr class="loading-row"><td colspan="4">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- USERS TAB -->
+      <div class="tab-panel" id="tab-users">
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <input type="text" class="search-input" id="userSearch" placeholder="🔍 Search by username or display name..." oninput="renderUsersTable()"/>
+            <span class="pill pill-muted" id="userCount">0 users</span>
+          </div>
+          <table>
+            <thead><tr><th>User</th><th>Messages</th><th>Visits</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+            <tbody id="usersBody"><tr class="loading-row"><td colspan="6">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MESSAGES TAB -->
+      <div class="tab-panel" id="tab-messages">
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <input type="text" class="search-input" id="msgSearch" placeholder="🔍 Search messages or recipient..." oninput="renderMessagesTable()"/>
+            <span class="pill pill-muted" id="msgCount">0 messages</span>
+          </div>
+          <table>
+            <thead><tr><th>Recipient</th><th>Message</th><th>Status</th><th>Sent</th><th>Actions</th></tr></thead>
+            <tbody id="messagesBody"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ADMIN SETTINGS TAB -->
+      <div class="tab-panel" id="tab-settings">
+        <div class="sec">
+          <h3>🔑 Change Admin Password</h3>
+          <p class="sec-desc">Update the password used to access this dashboard. Choose something strong — this protects every user's data.</p>
+          <div class="fg"><label>Current Admin Password</label><input type="password" id="curAdminPw" placeholder="Current password"/></div>
+          <div class="fg"><label>New Admin Password</label><input type="password" id="newAdminPw" placeholder="New password (min 6 characters)"/></div>
+          <div class="fg"><label>Confirm New Password</label><input type="password" id="cfAdminPw" placeholder="Repeat new password"/></div>
+          <button class="btn-save" onclick="changeAdminPw()">Update Admin Password</button>
+        </div>
+        <div class="sec">
+          <h3>ℹ️ About This Dashboard</h3>
+          <p class="sec-desc" style="margin-bottom:0;">This admin panel reads and writes directly to your Supabase database via secured RPC functions. No data here is stored in localStorage — refresh anytime to see live data. Keep your admin password private; anyone with it can view all users and messages.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+let ADMIN_PW=null, ALL_USERS=[], ALL_MESSAGES=[], STATS=null;
+
+// ============== GATE ==============
+async function doAdminLogin(){
+  const pw=document.getElementById('gatePw').value;
+  if(!pw)return;
+  const {data,error}=await sb.rpc('gm_admin_login',{p_password:pw});
+  if(error||!data.success){
+    document.getElementById('gatePw').classList.add('err');
+    document.getElementById('gateErr').classList.add('show');
+    setTimeout(()=>document.getElementById('gatePw').classList.remove('err'),400);
+    return;
+  }
+  ADMIN_PW=pw;
+  sessionStorage.setItem('gm_admin_pw',pw); // session-only, cleared when tab closes
+  document.getElementById('gate').style.display='none';
+  document.getElementById('app').classList.add('show');
+  refreshAll();
+}
+function doAdminLogout(){
+  sessionStorage.removeItem('gm_admin_pw');
+  ADMIN_PW=null;
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('gate').style.display='flex';
+  document.getElementById('gatePw').value='';
+}
+// Auto-restore session if tab refreshed (not closed)
+window.addEventListener('DOMContentLoaded',()=>{
+  const saved=sessionStorage.getItem('gm_admin_pw');
+  if(saved){
+    ADMIN_PW=saved;
+    document.getElementById('gate').style.display='none';
+    document.getElementById('app').classList.add('show');
+    refreshAll();
+  }
+});
+
+// ============== DATA LOADING ==============
+async function refreshAll(){
+  const btn=document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  await Promise.all([loadStats(),loadUsers(),loadMessages()]);
+  btn.classList.remove('spinning');
+  renderOverview();renderUsersTable();renderMessagesTable();
+}
+async function loadStats(){
+  const {data,error}=await sb.rpc('gm_admin_get_stats',{p_password:ADMIN_PW});
+  if(error||!data.success){showToast('Failed to load stats.','❌');return;}
+  STATS=data;
+}
+async function loadUsers(){
+  const {data,error}=await sb.rpc('gm_admin_get_users',{p_password:ADMIN_PW});
+  if(error||!data.success){showToast('Failed to load users.','❌');return;}
+  ALL_USERS=data.users||[];
+}
+async function loadMessages(){
+  const {data,error}=await sb.rpc('gm_admin_get_messages',{p_password:ADMIN_PW});
+  if(error||!data.success){showToast('Failed to load messages.','❌');return;}
+  ALL_MESSAGES=data.messages||[];
+}
+
+// ============== RENDER: OVERVIEW ==============
+function renderOverview(){
+  if(!STATS)return;
+  document.getElementById('statUsers').textContent=STATS.total_users;
+  document.getElementById('statMessages').textContent=STATS.total_messages;
+  document.getElementById('statUnread').textContent=STATS.unread_messages;
+  document.getElementById('statVisits').textContent=STATS.total_visits;
+  document.getElementById('statSignupsToday').textContent=STATS.signups_today;
+  document.getElementById('statMsgsToday').textContent=STATS.messages_today;
+
+  const recent=[...ALL_USERS].slice(0,8);
+  const body=document.getElementById('recentUsersBody');
+  if(!recent.length){body.innerHTML='<tr class="empty-row"><td colspan="4">No users yet.</td></tr>';return;}
+  body.innerHTML=recent.map(u=>`
+    <tr>
+      <td><div class="u-cell"><div class="u-av" style="background:linear-gradient(135deg,${u.avatar_color},#333)">${u.avatar_letter}</div><div><div class="u-name">${esc(u.display_name)}</div><div class="u-handle">@${esc(u.username)}</div></div></div></td>
+      <td>${u.message_count}</td>
+      <td>${u.link_visits}</td>
+      <td>${fmtDate(u.created_at)}</td>
+    </tr>`).join('');
+}
+
+// ============== RENDER: USERS ==============
+function renderUsersTable(){
+  const q=(document.getElementById('userSearch').value||'').toLowerCase();
+  const filtered=ALL_USERS.filter(u=>u.username.toLowerCase().includes(q)||u.display_name.toLowerCase().includes(q));
+  document.getElementById('userCount').textContent=filtered.length+' user'+(filtered.length!==1?'s':'');
+  const body=document.getElementById('usersBody');
+  if(!filtered.length){body.innerHTML='<tr class="empty-row"><td colspan="6">No users found.</td></tr>';return;}
+  body.innerHTML=filtered.map(u=>`
+    <tr>
+      <td><div class="u-cell"><div class="u-av" style="background:linear-gradient(135deg,${u.avatar_color},#333)">${u.avatar_letter}</div><div><div class="u-name">${esc(u.display_name)}</div><div class="u-handle">@${esc(u.username)}</div></div></div></td>
+      <td>${u.message_count}</td>
+      <td>${u.link_visits}</td>
+      <td>${u.is_banned?'<span class="pill pill-red">Banned</span>':'<span class="pill pill-green">Active</span>'}</td>
+      <td>${fmtDate(u.created_at)}</td>
+      <td><div class="row-acts">
+        <button class="racts-btn ban" onclick="toggleBan('${u.username}',${!u.is_banned})">${u.is_banned?'Unban':'Ban'}</button>
+        <button class="racts-btn" onclick="confirmDeleteUser('${u.username}')">Delete</button>
+      </div></td>
+    </tr>`).join('');
+}
+async function toggleBan(username,banned){
+  const {data,error}=await sb.rpc('gm_admin_set_ban',{p_password:ADMIN_PW,p_username:username,p_banned:banned});
+  if(error||!data.success){showToast('Action failed.','❌');return;}
+  showToast(banned?'User banned 🚫':'User unbanned ✅','✅');
+  await loadUsers();renderUsersTable();renderOverview();
+}
+function confirmDeleteUser(username){
+  showConfirm('Delete @'+username+'?','This permanently deletes the user account and all their messages. This cannot be undone.',async()=>{
+    const {data,error}=await sb.rpc('gm_admin_delete_user',{p_password:ADMIN_PW,p_username:username});
+    if(error||!data.success){showToast('Failed to delete user.','❌');return;}
+    showToast('User deleted 🗑️','✅');
+    await Promise.all([loadUsers(),loadMessages(),loadStats()]);
+    renderUsersTable();renderMessagesTable();renderOverview();
+  });
+}
+
+// ============== RENDER: MESSAGES ==============
+function renderMessagesTable(){
+  const q=(document.getElementById('msgSearch').value||'').toLowerCase();
+  const filtered=ALL_MESSAGES.filter(m=>m.text.toLowerCase().includes(q)||m.recipient_username.toLowerCase().includes(q));
+  document.getElementById('msgCount').textContent=filtered.length+' message'+(filtered.length!==1?'s':'');
+  const body=document.getElementById('messagesBody');
+  if(!filtered.length){body.innerHTML='<tr class="empty-row"><td colspan="5">No messages found.</td></tr>';return;}
+  body.innerHTML=filtered.slice(0,200).map(m=>`
+    <tr>
+      <td>@${esc(m.recipient_username)}</td>
+      <td class="msg-text-cell" title="${esc(m.text)}">${esc(m.text)}</td>
+      <td>${m.is_read?'<span class="pill pill-muted">Read</span>':'<span class="pill pill-green">Unread</span>'}</td>
+      <td>${fmtDate(m.created_at)}</td>
+      <td><button class="racts-btn" onclick="confirmDeleteMessage('${m.id}')">Delete</button></td>
+    </tr>`).join('');
+}
+function confirmDeleteMessage(id){
+  showConfirm('Delete this message?','This permanently removes the message from the recipient\\'s inbox.',async()=>{
+    const {data,error}=await sb.rpc('gm_admin_delete_message',{p_password:ADMIN_PW,p_message_id:id});
+    if(error||!data.success){showToast('Failed to delete message.','❌');return;}
+    showToast('Message deleted 🗑️','✅');
+    await Promise.all([loadMessages(),loadStats()]);
+    renderMessagesTable();renderOverview();
+  });
+}
+
+// ============== ADMIN SETTINGS ==============
+async function changeAdminPw(){
+  const cur=document.getElementById('curAdminPw').value;
+  const nw=document.getElementById('newAdminPw').value;
+  const cf=document.getElementById('cfAdminPw').value;
+  if(!cur){showToast('Enter current password.','❌');return;}
+  if(nw.length<6){showToast('New password must be 6+ characters.','❌');return;}
+  if(nw!==cf){showToast('Passwords don\'t match.','❌');return;}
+  const {data,error}=await sb.rpc('gm_admin_change_password',{p_current_password:cur,p_new_password:nw});
+  if(error||!data.success){showToast(data&&data.error?data.error:'Failed to update.','❌');return;}
+  ADMIN_PW=nw;sessionStorage.setItem('gm_admin_pw',nw);
+  document.getElementById('curAdminPw').value='';document.getElementById('newAdminPw').value='';document.getElementById('cfAdminPw').value='';
+  showToast('Admin password updated! 🔑','✅');
+}
+
+// ============== HELPERS ==============
+function esc(t){return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmtDate(iso){const d=new Date(iso);return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
+function showTab(t,el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));el.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  const titles={overview:'Overview',users:'Users',messages:'Messages',settings:'Admin Settings'};
+  const subs={overview:'Real-time platform statistics',users:'Manage all registered users',messages:'View and moderate all messages',settings:'Manage your admin access'};
+  document.getElementById('pageTitle').textContent=titles[t];
+  document.getElementById('pageSub').textContent=subs[t];
+  closeSB();
+}
+function showConfirm(title,desc,cb){document.getElementById('cmTitle').textContent=title;document.getElementById('cmDesc').textContent=desc;document.getElementById('cmOk').onclick=()=>{document.getElementById('cmBg').classList.remove('show');cb();};document.getElementById('cmBg').classList.add('show');}
+function showToast(msg,icon='👻'){document.getElementById('toastMsg').textContent=msg;document.getElementById('toastIcon').textContent=icon;const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+function openSB(){document.getElementById('sidebar').classList.add('open');document.getElementById('sbOverlay').classList.add('show');}
+function closeSB(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('show');}
+</script>
+</body>
+</html>

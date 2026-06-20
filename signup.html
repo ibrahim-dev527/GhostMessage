@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sign Up — GhostMessage</title>
+<link rel="icon" href="logo.png" type="image/png"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================================================
+   SUPABASE CONFIG — PASTE YOUR KEYS HERE
+   ============================================================ */
+const SUPABASE_URL = "https://akadqjijkasftwbtwayc.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYWRxamlqa2FzZnR3YnR3YXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NDI0NzgsImV4cCI6MjA5NzMxODQ3OH0.9AgKcEtYLck2zRJ___ZG0oNYO6y03BrBUcGuwC2zVCc";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+:root{--red:#e63946;--green:#2dc653;--yellow:#ffd60a;--dark:#0a0a0f;--dark2:#111118;--dark3:#1a1a24;--card:#16161e;--border:rgba(255,255,255,0.08);--text:#e8e8f0;--muted:#888899;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.bg-anim{position:fixed;inset:0;z-index:0;overflow:hidden;}
+.bg-blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.12;animation:bMove 8s ease-in-out infinite alternate;}
+.bg-blob:nth-child(1){width:500px;height:500px;background:var(--red);top:-100px;left:-100px;}
+.bg-blob:nth-child(2){width:400px;height:400px;background:var(--green);bottom:-100px;right:-100px;animation-delay:2s;}
+.bg-blob:nth-child(3){width:300px;height:300px;background:var(--yellow);top:40%;left:40%;animation-delay:4s;}
+@keyframes bMove{0%{transform:translate(0,0)scale(1);}100%{transform:translate(30px,20px)scale(1.1);}}
+/* HAMBURGER + LEFT MENU */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:0.6rem;text-decoration:none;}
+.nav-logo img{height:32px;}
+.nav-logo span{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;background:linear-gradient(90deg,var(--red),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:0.25rem;z-index:600;}
+.hamburger span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:all 0.35s cubic-bezier(0.23,1,0.32,1);}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:490;}
+.mob-overlay.show{display:block;}
+.mobile-menu{position:fixed;top:0;left:0;bottom:0;width:280px;background:var(--dark2);border-right:1px solid var(--border);z-index:495;display:flex;flex-direction:column;padding:2rem 1.5rem;transform:translateX(-100%);transition:transform 0.35s cubic-bezier(0.23,1,0.32,1);}
+.mobile-menu.open{transform:translateX(0);}
+.mob-logo{display:flex;align-items:center;gap:0.6rem;margin-bottom:2.5rem;text-decoration:none;}
+.mob-logo img{height:32px;}
+.mob-logo span{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;background:linear-gradient(90deg,var(--red),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.mob-link{display:block;padding:0.85rem 0;color:var(--muted);text-decoration:none;font-size:1rem;font-weight:500;border-bottom:1px solid var(--border);transition:color 0.2s;}
+.mob-link:hover{color:var(--text);}
+.mob-cta{margin-top:2rem;display:flex;flex-direction:column;gap:0.75rem;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:0.4rem;padding:0.65rem 1.3rem;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;border:none;text-decoration:none;transition:all 0.3s;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+.btn-red{background:linear-gradient(135deg,var(--red),#c1121f);color:#fff;}
+/* PAGE */
+.page{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:64px;}
+.left-panel{background:linear-gradient(135deg,rgba(230,57,70,0.08),rgba(45,198,83,0.04));border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:3rem;position:relative;overflow:hidden;}
+.left-panel::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(230,57,70,0.07),transparent 70%);}
+.brand-area{text-align:center;position:relative;z-index:1;}
+.brand-area img{height:72px;margin-bottom:1.5rem;filter:drop-shadow(0 0 20px rgba(255,255,255,0.15));}
+.brand-area h1{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:0.5rem;background:linear-gradient(90deg,var(--red),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-area p{color:var(--muted);font-size:0.9rem;max-width:300px;line-height:1.7;}
+.left-feats{margin-top:2.5rem;display:flex;flex-direction:column;gap:0.85rem;width:100%;max-width:300px;position:relative;z-index:1;}
+.lfeat{display:flex;align-items:center;gap:0.75rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1rem;}
+.lfeat .ic{font-size:1.1rem;}
+.lfeat p{font-size:0.82rem;color:var(--muted);line-height:1.4;}
+.lfeat strong{color:var(--text);display:block;font-size:0.85rem;}
+.float-ghost{position:absolute;pointer-events:none;font-size:2rem;opacity:0.08;animation:gf 5s ease-in-out infinite;}
+.float-ghost:nth-child(1){top:10%;left:8%;animation-delay:0s;}
+.float-ghost:nth-child(2){top:35%;right:6%;animation-delay:1.5s;}
+.float-ghost:nth-child(3){bottom:25%;left:12%;animation-delay:3s;}
+.float-ghost:nth-child(4){bottom:8%;right:10%;animation-delay:1s;}
+@keyframes gf{0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-18px) rotate(5deg);}}
+/* RIGHT */
+.right-panel{display:flex;align-items:center;justify-content:center;padding:2rem 2.5rem;}
+.form-card{width:100%;max-width:420px;}
+.back-link{display:inline-flex;align-items:center;gap:0.5rem;color:var(--muted);text-decoration:none;font-size:0.83rem;margin-bottom:1.75rem;transition:color 0.2s;}
+.back-link:hover{color:var(--green);}
+.form-card h2{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:0.4rem;}
+.form-card > p{color:var(--muted);font-size:0.87rem;margin-bottom:2rem;}
+.fg{margin-bottom:1.2rem;}
+.fg label{display:block;font-size:0.82rem;font-weight:600;margin-bottom:0.45rem;}
+.iw{position:relative;}
+.ii{position:absolute;left:1rem;top:50%;transform:translateY(-50%);font-size:0.95rem;color:var(--muted);}
+.fg input{width:100%;padding:0.82rem 1rem 0.82rem 2.7rem;background:var(--card);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:0.92rem;outline:none;transition:all 0.3s;}
+.fg input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(45,198,83,0.1);}
+.fg.err input{border-color:var(--red);}
+.hint{font-size:0.72rem;color:var(--muted);margin-top:0.35rem;}
+.errmsg{font-size:0.72rem;color:var(--red);margin-top:0.35rem;display:none;}
+.fg.err .errmsg{display:block;}
+.link-prev{background:rgba(45,198,83,0.06);border:1px solid rgba(45,198,83,0.2);border-radius:10px;padding:0.65rem 1rem;margin-top:0.5rem;display:none;}
+.link-prev p{font-size:0.75rem;color:var(--muted);}
+.link-prev strong{color:var(--green);font-size:0.8rem;word-break:break-all;}
+.str-bar{height:4px;background:var(--border);border-radius:4px;margin-top:0.5rem;overflow:hidden;}
+.str-fill{height:100%;border-radius:4px;transition:width 0.4s,background 0.4s;width:0;}
+.str-label{font-size:0.7rem;margin-top:0.3rem;color:var(--muted);}
+.terms-row{display:flex;align-items:flex-start;gap:0.7rem;margin-bottom:1.4rem;}
+.terms-row input{width:15px;height:15px;accent-color:var(--green);margin-top:2px;flex-shrink:0;}
+.terms-row label{font-size:0.8rem;color:var(--muted);line-height:1.5;}
+.terms-row a{color:var(--green);}
+.submit-btn{width:100%;padding:0.92rem;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--red),#c1121f);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:0.97rem;font-weight:700;transition:all 0.3s;position:relative;}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(230,57,70,0.5);}
+.submit-btn:disabled{opacity:0.55;cursor:not-allowed;transform:none;}
+.spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;}
+.submit-btn.loading .btn-t{display:none;}.submit-btn.loading .spinner{display:block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.divider{display:flex;align-items:center;gap:1rem;margin:1.4rem 0;color:var(--muted);font-size:0.78rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.login-link{text-align:center;font-size:0.88rem;color:var(--muted);}
+.login-link a{color:var(--green);text-decoration:none;font-weight:600;}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.4rem;display:flex;align-items:center;gap:0.7rem;z-index:9998;min-width:260px;transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+@media(max-width:768px){.page{grid-template-columns:1fr;}.left-panel{display:none;}.right-panel{padding:1.5rem;}.hamburger{display:flex;}}
+@media(max-width:480px){.right-panel{padding:1rem;}}
+</style>
+</head>
+<body>
+<div class="bg-anim"><div class="bg-blob"></div><div class="bg-blob"></div><div class="bg-blob"></div></div>
+<div class="toast" id="toast"><span id="toastIcon">👻</span><span id="toastMsg">Welcome!</span></div>
+<div class="mob-overlay" id="mobOverlay" onclick="closeMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" class="mob-logo"><img src="logo.png" alt=""/><span>GhostMessage</span></a>
+  <a href="index.html" class="mob-link" onclick="closeMenu()">Home</a>
+  <a href="login.html" class="mob-link" onclick="closeMenu()">Log In</a>
+  <div class="mob-cta"><a href="signup.html" class="btn btn-red">Sign Up</a></div>
+</div>
+<nav>
+  <a href="index.html" class="nav-logo"><img src="logo.png" alt="GhostMessage"/><span>GhostMessage</span></a>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+</nav>
+<div class="page">
+  <div class="left-panel">
+    <span class="float-ghost">👻</span><span class="float-ghost">💬</span><span class="float-ghost">🔮</span><span class="float-ghost">✉️</span>
+    <div class="brand-area">
+      <img src="logo.png" alt="GhostMessage"/>
+      <h1>GhostMessage</h1>
+      <p>Create your anonymous link and start receiving honest messages — your identity stays yours.</p>
+    </div>
+    <div class="left-feats">
+      <div class="lfeat"><span class="ic">🔒</span><div><strong>100% Anonymous</strong><p>Senders are never revealed</p></div></div>
+      <div class="lfeat"><span class="ic">⚡</span><div><strong>Instant Setup</strong><p>Ready in under 60 seconds</p></div></div>
+      <div class="lfeat"><span class="ic">🛡️</span><div><strong>Spam Protected</strong><p>Only real messages get through</p></div></div>
+    </div>
+  </div>
+  <div class="right-panel">
+    <div class="form-card">
+      <a href="index.html" class="back-link">← Back to Home</a>
+      <h2>Create your account 👻</h2>
+      <p>No email required. Just pick a username and you're in.</p>
+      <div class="fg" id="g-user">
+        <label for="username">Choose a Username</label>
+        <div class="iw"><span class="ii">👤</span><input type="text" id="username" placeholder="e.g. ghostkwame" autocomplete="off" maxlength="20" oninput="onUsername()"/></div>
+        <div class="hint">Letters, numbers, underscores only. 3–20 characters.</div>
+        <div class="errmsg" id="e-user">Username must be 3–20 chars, letters/numbers/underscore only.</div>
+        <div class="link-prev" id="linkPrev"><p>Your anonymous link:</p><strong id="linkPrevText"></strong></div>
+      </div>
+      <div class="fg" id="g-dname">
+        <label for="dname">Display Name <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+        <div class="iw"><span class="ii">✏️</span><input type="text" id="dname" placeholder="e.g. Kwame A." maxlength="40"/></div>
+      </div>
+      <div class="fg" id="g-pw">
+        <label for="pw">Create Password</label>
+        <div class="iw"><span class="ii">🔑</span><input type="password" id="pw" placeholder="Minimum 6 characters" oninput="checkStrength()"/></div>
+        <div class="str-bar"><div class="str-fill" id="strFill"></div></div>
+        <div class="str-label" id="strLabel">Enter a password</div>
+        <div class="errmsg" id="e-pw">Password must be at least 6 characters.</div>
+      </div>
+      <div class="fg" id="g-cpw">
+        <label for="cpw">Confirm Password</label>
+        <div class="iw"><span class="ii">🔐</span><input type="password" id="cpw" placeholder="Repeat your password"/></div>
+        <div class="errmsg" id="e-cpw">Passwords do not match.</div>
+      </div>
+      <div class="terms-row">
+        <input type="checkbox" id="terms"/>
+        <label for="terms">I agree to the <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>. I understand messages are anonymous.</label>
+      </div>
+      <button class="submit-btn" id="signupBtn" onclick="doSignup()">
+        <span class="btn-t">Create My Ghost Account 👻</span>
+        <div class="spinner"></div>
+      </button>
+      <div class="divider">or</div>
+      <div class="login-link">Already have an account? <a href="login.html">Log in →</a></div>
+    </div>
+  </div>
+</div>
+<!-- CHATBOT -->
+<style>.gm-chat-bubble{position:fixed;bottom:2rem;right:2rem;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#e63946,#c1121f);display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;z-index:8000;box-shadow:0 4px 24px rgba(230,57,70,0.5);border:none;transition:transform 0.2s;}.gm-chat-bubble:hover{transform:scale(1.1);}.gm-chat-panel{position:fixed;bottom:5.5rem;right:2rem;width:340px;max-height:500px;background:#16161e;border:1px solid rgba(255,255,255,0.08);border-radius:20px;display:flex;flex-direction:column;z-index:8000;box-shadow:0 24px 80px rgba(0,0,0,0.6);transform:scale(0.9) translateY(20px);opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);}.gm-chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}.gm-chat-head{padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.75rem;background:linear-gradient(135deg,rgba(230,57,70,0.15),rgba(45,198,83,0.05));border-radius:20px 20px 0 0;}.gm-chat-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#e63946,#2dc653);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}.gm-chat-info{flex:1;}.gm-chat-info strong{display:block;font-size:0.88rem;color:#e8e8f0;}.gm-chat-info span{font-size:0.7rem;color:#2dc653;}.gm-chat-close{background:none;border:none;color:#888899;cursor:pointer;font-size:1.1rem;padding:0.2rem;}.gm-chat-close:hover{color:#e8e8f0;}.gm-chat-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.7rem;min-height:180px;max-height:300px;}.gm-msg{max-width:82%;padding:0.6rem 0.85rem;border-radius:14px;font-size:0.82rem;line-height:1.5;font-family:'Space Grotesk',sans-serif;word-break:break-word;}.gm-msg.bot{background:rgba(255,255,255,0.06);color:#e8e8f0;border-bottom-left-radius:4px;align-self:flex-start;}.gm-msg.user{background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;border-bottom-right-radius:4px;align-self:flex-end;}.gm-typing-dots{display:inline-flex;gap:3px;align-items:center;}.gm-typing-dots span{width:5px;height:5px;background:#888899;border-radius:50%;animation:tB 1.2s infinite;}.gm-typing-dots span:nth-child(2){animation-delay:0.2s;}.gm-typing-dots span:nth-child(3){animation-delay:0.4s;}@keyframes tB{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}.gm-quick-chips{display:flex;flex-wrap:wrap;gap:0.35rem;padding:0 1rem 0.5rem;}.gm-chip{padding:0.28rem 0.65rem;border-radius:50px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#888899;font-size:0.72rem;cursor:pointer;transition:all 0.2s;}.gm-chip:hover{border-color:#2dc653;color:#2dc653;}.gm-chat-input-row{padding:0.7rem 1rem;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:0.5rem;}.gm-chat-input{flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;padding:0.55rem 0.8rem;color:#e8e8f0;font-family:'Space Grotesk',sans-serif;font-size:0.82rem;outline:none;transition:border-color 0.2s;}.gm-chat-input:focus{border-color:#2dc653;}.gm-chat-input::placeholder{color:#555566;}.gm-chat-send{width:34px;height:34px;border-radius:8px;border:none;cursor:pointer;background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.85rem;transition:all 0.2s;flex-shrink:0;align-self:center;}.gm-chat-send:disabled{opacity:0.4;cursor:not-allowed;}.gm-wa-link{color:#25d366;text-decoration:none;font-weight:600;}@media(max-width:480px){.gm-chat-panel{width:calc(100vw - 2rem);right:1rem;}.gm-chat-bubble{right:1rem;bottom:1.5rem;}}</style>
+<button class="gm-chat-bubble" id="gmChatBubble" onclick="gmToggleChat()" title="Ask GhostBot">👻</button>
+<div class="gm-chat-panel" id="gmChatPanel">
+  <div class="gm-chat-head"><div class="gm-chat-avatar">👻</div><div class="gm-chat-info"><strong>GhostBot</strong><span>● Online</span></div><button class="gm-chat-close" onclick="gmToggleChat()">✕</button></div>
+  <div class="gm-chat-messages" id="gmMessages"></div>
+  <div class="gm-quick-chips" id="gmChips">
+    <span class="gm-chip" onclick="gmSendChip(this)">How to sign up?</span>
+    <span class="gm-chip" onclick="gmSendChip(this)">Is it free?</span>
+    <span class="gm-chip" onclick="gmSendChip(this)">What username should I pick?</span>
+  </div>
+  <div class="gm-chat-input-row"><input class="gm-chat-input" id="gmChatInput" placeholder="Ask GhostBot..." maxlength="300" onkeydown="if(event.key==='Enter')gmSend()"/><button class="gm-chat-send" id="gmSendBtn" onclick="gmSend()">➤</button></div>
+</div>
+<script>
+function toggleMenu(){const o=document.getElementById('mobileMenu').classList.toggle('open');document.getElementById('mobOverlay').classList.toggle('show',o);document.getElementById('hamburger').classList.toggle('open',o);}
+function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');document.getElementById('mobOverlay').classList.remove('show');document.getElementById('hamburger').classList.remove('open');}
+function showToast(msg,icon='👻'){document.getElementById('toastMsg').textContent=msg;document.getElementById('toastIcon').textContent=icon;const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+// Check session
+(function(){const s=localStorage.getItem('gm_session');if(s){try{const p=JSON.parse(s);if(p.username&&Date.now()-p.loggedAt<7*24*60*60*1000)window.location.href='dashboard.html';}catch(e){}}})();
+function onUsername(){const v=document.getElementById('username').value.trim();const prev=document.getElementById('linkPrev');if(v.length>=2){prev.style.display='block';const b=window.location.origin+window.location.pathname.replace('signup.html','');document.getElementById('linkPrevText').textContent=b+'message.html?to='+v;}else{prev.style.display='none';}}
+function checkStrength(){const p=document.getElementById('pw').value;let s=0;if(p.length>=6)s++;if(p.length>=10)s++;if(/[A-Z]/.test(p))s++;if(/[0-9]/.test(p))s++;if(/[^a-zA-Z0-9]/.test(p))s++;const cfg=[{w:'0%',c:'transparent',l:'Enter a password'},{w:'25%',c:'#e63946',l:'Weak'},{w:'50%',c:'#ffd60a',l:'Fair'},{w:'75%',c:'#2dc653',l:'Strong'},{w:'100%',c:'#00ff88',l:'Very Strong 🔒'}];const c=cfg[Math.min(s,4)];const f=document.getElementById('strFill');f.style.width=c.w;f.style.background=c.c;const l=document.getElementById('strLabel');l.textContent=c.l;l.style.color=c.c;}
+function doSignup(){
+  let ok=true;document.querySelectorAll('.fg').forEach(g=>g.classList.remove('err'));
+  const u=document.getElementById('username').value.trim();const d=document.getElementById('dname').value.trim();const p=document.getElementById('pw').value;const c=document.getElementById('cpw').value;const t=document.getElementById('terms').checked;
+  if(!/^[a-zA-Z0-9_]{3,20}$/.test(u)){document.getElementById('g-user').classList.add('err');ok=false;}
+  if(p.length<6){document.getElementById('g-pw').classList.add('err');ok=false;}
+  if(p!==c){document.getElementById('g-cpw').classList.add('err');ok=false;}
+  if(!t){showToast('Please accept the terms.','⚠️');ok=false;}
+  if(!ok)return;
+  const btn=document.getElementById('signupBtn');btn.classList.add('loading');btn.disabled=true;
+  (async()=>{
+    const cols=['#e63946','#2dc653','#ffd60a','#9b5de5','#f15bb5','#00bbf9'];
+    const ac=cols[Math.floor(Math.random()*cols.length)];
+    const dn=d||u;
+    try{
+      const {data,error}=await sb.rpc('gm_signup',{
+        p_username:u, p_password:p, p_display_name:dn, p_avatar_color:ac
+      });
+      if(error){btn.classList.remove('loading');btn.disabled=false;showToast('Something went wrong. Try again.','❌');console.error(error);return;}
+      if(!data.success){
+        btn.classList.remove('loading');btn.disabled=false;
+        document.getElementById('g-user').classList.add('err');
+        document.getElementById('e-user').textContent=data.error;
+        showToast(data.error,'❌');
+        return;
+      }
+      // Store session locally (username + password kept only for re-authenticating RPC calls)
+      localStorage.setItem('gm_session',JSON.stringify({username:u.toLowerCase(),password:p,loggedAt:Date.now()}));
+      showToast('Account created! Welcome 👻','✅');
+      setTimeout(()=>window.location.href='dashboard.html',1200);
+    }catch(err){
+      btn.classList.remove('loading');btn.disabled=false;
+      showToast('Network error. Check your connection.','❌');
+      console.error(err);
+    }
+  })();
+}
+document.querySelectorAll('input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')doSignup();}));
+// CHATBOT
+(function(){let o=false,h=[],busy=false;const SYS=`You are GhostBot, friendly AI assistant for GhostMessage — anonymous messaging platform by Ibratech (Ibrahim Mohammed Lotsu), Ghana. Be warm, witty, ghost-themed. Use 👻 occasionally. Platform: free signup (username+password, no email), unique anonymous link, messages to dashboard, spam protection. Developer WhatsApp: +233554196068. If you can't help, redirect to WhatsApp nicely. Keep answers short (2-4 sentences).`;
+window.gmToggleChat=function(){o=!o;document.getElementById('gmChatPanel').classList.toggle('open',o);document.getElementById('gmChatBubble').textContent=o?'✕':'👻';if(o&&h.length===0)setTimeout(()=>add('bot',"Hey! 👻 I'm GhostBot. Need help signing up? Ask me anything!"),300);if(o)setTimeout(()=>document.getElementById('gmChatInput').focus(),400);};
+window.gmSendChip=function(el){const t=el.textContent;document.getElementById('gmChips').style.display='none';add('user',t);call(t);};
+window.gmSend=function(){const inp=document.getElementById('gmChatInput');const t=inp.value.trim();if(!t||busy)return;inp.value='';document.getElementById('gmChips').style.display='none';add('user',t);call(t);};
+function add(role,text){const d=document.createElement('div');d.className='gm-msg '+role;d.innerHTML=text;document.getElementById('gmMessages').appendChild(d);document.getElementById('gmMessages').scrollTop=99999;return d;}
+async function call(msg){busy=true;document.getElementById('gmSendBtn').disabled=true;h.push({role:'user',content:msg});const tEl=document.createElement('div');tEl.className='gm-msg bot';tEl.innerHTML='<div class="gm-typing-dots"><span></span><span></span><span></span></div>';document.getElementById('gmMessages').appendChild(tEl);document.getElementById('gmMessages').scrollTop=99999;
+try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:SYS,messages:h})});const data=await r.json();const reply=data.content&&data.content[0]?data.content[0].text:"I'm having trouble 👻 Reach Ibrahim: <a class='gm-wa-link' href='https://wa.me/233554196068' target='_blank'>WhatsApp</a>";tEl.remove();const fmt=reply.replace(/https:\/\/wa\.me\/\S+/g,u=>`<a class='gm-wa-link' href='${u}' target='_blank'>${u}</a>`);add('bot',fmt);h.push({role:'assistant',content:reply});if(h.length>20)h=h.slice(-16);}catch(e){tEl.remove();add('bot',"Something went wrong! 👻 <a class='gm-wa-link' href='https://wa.me/233554196068' target='_blank'>Chat with Ibrahim</a>");}
+busy=false;document.getElementById('gmSendBtn').disabled=false;}})();
+</script>
+</body>
+</html>

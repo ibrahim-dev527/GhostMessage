@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GhostMessage — Send Anonymous Messages. Stay Hidden.</title>
+<meta name="description" content="GhostMessage lets you receive honest, anonymous messages from anyone. Create your free link, share it, and discover what people really think."/>
+<meta name="keywords" content="anonymous messages, ghostmessage, anonymous chat, secret messages, Ghana, NGL, anonymous link"/>
+<meta name="author" content="Ibratech"/>
+<meta property="og:title" content="GhostMessage — Anonymous Messaging Platform"/>
+<meta property="og:description" content="Receive anonymous messages from anyone. No names. No traces."/>
+<meta property="og:image" content="logo.png"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" href="logo.png" type="image/png"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================================================
+   SUPABASE CONFIG — PASTE YOUR KEYS HERE
+   ============================================================ */
+const SUPABASE_URL = "https://akadqjijkasftwbtwayc.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYWRxamlqa2FzZnR3YnR3YXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NDI0NzgsImV4cCI6MjA5NzMxODQ3OH0.9AgKcEtYLck2zRJ___ZG0oNYO6y03BrBUcGuwC2zVCc";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+:root{
+  --red:#e63946;--green:#2dc653;--yellow:#c0b682;
+  --dark:#0a0a0f;--dark2:#111118;--dark3:#1a1a24;--card:#16161e;
+  --border:rgba(255,255,255,0.08);--text:#e8e8f0;--muted:#888899;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--dark);color:var(--text);overflow-x:hidden;line-height:1.6;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}
+
+/* LOADER */
+.loader{position:fixed;inset:0;background:var(--dark);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;transition:opacity 0.5s ease;}
+.loader.hidden{opacity:0;pointer-events:none;}
+.loader-ghost{font-size:4rem;animation:gFloat 1.5s ease-in-out infinite;}
+.loader-bar{width:200px;height:3px;background:var(--border);border-radius:3px;overflow:hidden;}
+.loader-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--green));animation:lFill 1.5s ease forwards;}
+@keyframes lFill{from{width:0}to{width:100%}}
+.loader p{color:var(--muted);font-size:0.85rem;}
+@keyframes gFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+
+/* CANVAS */
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* NAVBAR */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:padding 0.3s;}
+nav.scrolled{padding:0.65rem 5%;}
+.nav-logo{display:flex;align-items:center;gap:0.6rem;text-decoration:none;}
+.nav-logo img{height:36px;}
+.nav-logo span{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;background:linear-gradient(90deg,var(--red),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-links{display:flex;align-items:center;gap:2rem;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.88rem;font-weight:500;transition:color 0.2s;}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{display:flex;gap:0.6rem;}
+.btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.6rem 1.3rem;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;border:none;text-decoration:none;transition:all 0.3s;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+.btn-outline:hover{border-color:var(--green);color:var(--green);}
+.btn-red{background:linear-gradient(135deg,var(--red),#c1121f);color:#fff;box-shadow:0 4px 20px rgba(230,57,70,0.35);}
+.btn-red:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(230,57,70,0.55);}
+.btn-green{background:linear-gradient(135deg,var(--green),#1a9e3f);color:#fff;box-shadow:0 4px 20px rgba(45,198,83,0.35);}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(45,198,83,0.55);}
+
+/* HAMBURGER */
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:0.25rem;z-index:600;}
+.hamburger span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:all 0.35s cubic-bezier(0.23,1,0.32,1);}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* MOBILE MENU — SLIDES FROM LEFT */
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:490;}
+.mob-overlay.show{display:block;}
+.mobile-menu{
+  position:fixed;top:0;left:0;bottom:0;width:280px;
+  background:var(--dark2);border-right:1px solid var(--border);
+  z-index:495;display:flex;flex-direction:column;padding:2rem 1.5rem;gap:0;
+  transform:translateX(-100%);transition:transform 0.35s cubic-bezier(0.23,1,0.32,1);
+}
+.mobile-menu.open{transform:translateX(0);}
+.mob-logo{display:flex;align-items:center;gap:0.6rem;margin-bottom:2.5rem;text-decoration:none;}
+.mob-logo img{height:32px;}
+.mob-logo span{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;background:linear-gradient(90deg,var(--red),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.mob-link{display:block;padding:0.85rem 0;color:var(--muted);text-decoration:none;font-size:1rem;font-weight:500;border-bottom:1px solid var(--border);transition:color 0.2s;}
+.mob-link:hover{color:var(--text);}
+.mob-cta{margin-top:2rem;display:flex;flex-direction:column;gap:0.75rem;}
+
+/* SECTIONS */
+section{position:relative;z-index:1;}
+.container{max-width:1200px;margin:0 auto;padding:0 5%;}
+.section-label{display:inline-block;padding:0.3rem 1rem;background:rgba(255,214,10,0.1);border:1px solid rgba(255,214,10,0.3);border-radius:50px;font-size:0.72rem;font-weight:700;color:var(--yellow);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem;}
+.section-title{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;margin-bottom:1rem;}
+.section-sub{font-size:0.95rem;color:var(--muted);line-height:1.7;}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;padding:8rem 5% 4rem;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(230,57,70,0.1) 0%,transparent 60%),radial-gradient(ellipse at 80% 50%,rgba(45,198,83,0.08) 0%,transparent 60%);}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;max-width:1200px;margin:0 auto;width:100%;}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:0.4rem 1rem;background:rgba(45,198,83,0.1);border:1px solid rgba(45,198,83,0.3);border-radius:50px;font-size:0.78rem;color:var(--green);margin-bottom:1.5rem;font-weight:600;animation:badgePulse 2s infinite;}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(45,198,83,0.3);}50%{box-shadow:0 0 0 8px rgba(45,198,83,0);}}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:800;line-height:1.1;margin-bottom:1.5rem;}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--red),var(--yellow),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:1.05rem;color:var(--muted);margin-bottom:2.5rem;max-width:460px;line-height:1.7;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.hero-stats{display:flex;gap:2.5rem;margin-top:3rem;}
+.hstat-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--yellow);}
+.hstat-label{font-size:0.78rem;color:var(--muted);}
+.hero-visual{display:flex;justify-content:center;align-items:center;position:relative;}
+.ghost-wrap{position:relative;width:300px;height:360px;}
+.ghost-svg-main{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);animation:gFloat 3s ease-in-out infinite;}
+.ghost-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(255,255,255,0.08);animation:rPulse 3s ease-in-out infinite;}
+.ghost-ring:nth-child(1){width:180px;height:180px;}
+.ghost-ring:nth-child(2){width:260px;height:260px;border-color:rgba(230,57,70,0.12);animation-delay:0.4s;}
+.ghost-ring:nth-child(3){width:340px;height:340px;border-color:rgba(45,198,83,0.08);animation-delay:0.8s;}
+@keyframes rPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.5;}50%{transform:translate(-50%,-50%) scale(1.04);opacity:1;}}
+.mini-ghosts span{position:absolute;font-size:1.4rem;animation:gFloat 4s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(255,255,255,0.2));}
+.mini-ghosts span:nth-child(1){top:5%;left:0;animation-delay:0s;}
+.mini-ghosts span:nth-child(2){top:15%;right:-5%;animation-delay:1s;}
+.mini-ghosts span:nth-child(3){bottom:20%;left:-5%;animation-delay:2s;}
+.mini-ghosts span:nth-child(4){bottom:8%;right:0;animation-delay:0.5s;}
+
+/* HOW IT WORKS */
+.how{padding:6rem 0;background:var(--dark2);}
+.how-header{text-align:center;margin-bottom:4rem;}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;}
+.step-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden;transition:all 0.35s;}
+.step-card::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.35s;border-radius:20px;}
+.step-card:nth-child(1)::after{background:radial-gradient(ellipse at top,rgba(230,57,70,0.07),transparent);}
+.step-card:nth-child(2)::after{background:radial-gradient(ellipse at top,rgba(255,214,10,0.07),transparent);}
+.step-card:nth-child(3)::after{background:radial-gradient(ellipse at top,rgba(45,198,83,0.07),transparent);}
+.step-card:hover::after{opacity:1;}
+.step-card:hover{transform:translateY(-8px);border-color:rgba(255,255,255,0.14);}
+.step-bg-num{position:absolute;top:0.75rem;right:1.25rem;font-family:'Syne',sans-serif;font-size:4rem;font-weight:800;opacity:0.06;line-height:1;}
+.step-icon{font-size:2.5rem;margin-bottom:1.25rem;display:block;}
+.step-card h3{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin-bottom:0.75rem;}
+.step-card p{color:var(--muted);font-size:0.87rem;line-height:1.7;}
+
+/* FEATURES */
+.features{padding:6rem 0;}
+.feat-header{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;margin-bottom:4rem;}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.75rem;transition:all 0.3s;}
+.feat-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.12);}
+.feat-icon{font-size:2rem;margin-bottom:1rem;display:block;}
+.feat-card h4{font-weight:700;font-size:0.95rem;margin-bottom:0.5rem;}
+.feat-card p{font-size:0.83rem;color:var(--muted);line-height:1.6;}
+.tag{display:inline-block;padding:0.18rem 0.55rem;border-radius:4px;font-size:0.68rem;font-weight:700;margin-top:0.75rem;text-transform:uppercase;letter-spacing:0.04em;}
+.t-red{background:rgba(230,57,70,0.12);color:var(--red);}
+.t-green{background:rgba(45,198,83,0.12);color:var(--green);}
+.t-yellow{background:rgba(255,214,10,0.12);color:var(--yellow);}
+
+/* TESTIMONIALS */
+.testi{padding:6rem 0;background:var(--dark2);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem;}
+.testi-card{background:var(--dark3);border:1px solid var(--border);border-radius:16px;padding:1.75rem;transition:all 0.3s;}
+.testi-card:hover{transform:translateY(-4px);}
+.stars{color:var(--yellow);font-size:0.82rem;margin-bottom:0.75rem;}
+.testi-quote{font-size:2rem;color:var(--green);line-height:1;margin-bottom:0.6rem;}
+.testi-text{font-size:0.88rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;}
+.testi-author{display:flex;align-items:center;gap:0.75rem;}
+.tav{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;flex-shrink:0;}
+.tname{font-weight:600;font-size:0.87rem;}
+.thandle{font-size:0.73rem;color:var(--muted);}
+
+/* FAQ */
+.faq{padding:6rem 0;}
+.faq-inner{max-width:760px;margin:3rem auto 0;}
+.faq-item{border:1px solid var(--border);border-radius:12px;margin-bottom:0.85rem;overflow:hidden;}
+.faq-q{padding:1.2rem 1.5rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:0.92rem;background:var(--card);transition:background 0.2s;}
+.faq-q:hover{background:var(--dark3);}
+.faq-chevron{transition:transform 0.3s;color:var(--muted);font-size:1.1rem;flex-shrink:0;}
+.faq-item.open .faq-chevron{transform:rotate(180deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.4s ease;background:var(--dark3);}
+.faq-a-inner{padding:0 1.5rem;color:var(--muted);font-size:0.87rem;line-height:1.75;}
+.faq-item.open .faq-a{max-height:200px;}
+.faq-item.open .faq-a-inner{padding:1.25rem 1.5rem;}
+
+/* CTA */
+.cta-section{padding:8rem 0;text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(230,57,70,0.12),transparent 70%);}
+.cta-ghost{font-size:5rem;display:inline-block;animation:gFloat 3s ease-in-out infinite;margin-bottom:1rem;}
+.cta-section h2{font-family:'Syne',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:800;margin-bottom:1rem;}
+.cta-section p{color:var(--muted);font-size:1rem;max-width:480px;margin:0 auto 2.5rem;line-height:1.7;}
+.cta-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;}
+
+/* FOOTER */
+footer{background:var(--dark2);border-top:1px solid var(--border);padding:4rem 5% 2rem;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;max-width:1200px;margin:0 auto;}
+.footer-brand img{height:38px;margin-bottom:1rem;}
+.footer-brand p{color:var(--muted);font-size:0.83rem;line-height:1.7;margin-bottom:1.25rem;}
+.f-social{display:flex;gap:0.6rem;}
+.fsoc{width:34px;height:34px;border-radius:8px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--muted);text-decoration:none;transition:all 0.2s;}
+.fsoc:hover{border-color:var(--green);color:var(--green);}
+.fcol h5{font-weight:700;font-size:0.87rem;margin-bottom:1.25rem;}
+.fcol ul{list-style:none;}
+.fcol li{margin-bottom:0.65rem;}
+.fcol a{color:var(--muted);text-decoration:none;font-size:0.83rem;transition:color 0.2s;}
+.fcol a:hover{color:var(--green);}
+.footer-bottom{max-width:1200px;margin:3rem auto 0;padding-top:2rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.footer-bottom p{color:var(--muted);font-size:0.78rem;}
+.footer-bottom a{color:var(--green);text-decoration:none;}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.4rem;display:flex;align-items:center;gap:0.7rem;z-index:9998;min-width:260px;transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* FADE IN */
+.fade-in{opacity:0;transform:translateY(28px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+
+/* WHATSAPP FLOAT */
+.wa-float{position:fixed;bottom:6.5rem;right:2rem;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#25d366,#128c7e);display:flex;align-items:center;justify-content:center;font-size:1.4rem;text-decoration:none;box-shadow:0 4px 20px rgba(37,211,102,0.4);z-index:7999;transition:transform 0.2s;}
+.wa-float:hover{transform:scale(1.1);}
+
+@media(max-width:900px){
+  .nav-links,.nav-cta{display:none;}
+  .hamburger{display:flex;}
+  .hero-grid{grid-template-columns:1fr;text-align:center;}
+  .hero-visual{display:none;}
+  .hero-btns{justify-content:center;}
+  .hero-stats{justify-content:center;}
+  .steps-grid{grid-template-columns:1fr;}
+  .feat-header{grid-template-columns:1fr;}
+  .feat-grid{grid-template-columns:1fr 1fr;}
+  .testi-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .feat-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr;}
+  .hero-stats{gap:1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-ghost">👻</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <p>Summoning ghosts...</p>
+</div>
+
+<canvas id="bgCanvas"></canvas>
+
+<!-- MOBILE OVERLAY & MENU -->
+<div class="mob-overlay" id="mobOverlay" onclick="closeMenu()"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" class="mob-logo">
+    <img src="logo.png" alt="GhostMessage"/>
+    <span>GhostMessage</span>
+  </a>
+  <a href="#how" class="mob-link" onclick="closeMenu()">How It Works</a>
+  <a href="#features" class="mob-link" onclick="closeMenu()">Features</a>
+  <a href="#faq" class="mob-link" onclick="closeMenu()">FAQ</a>
+  <div class="mob-cta">
+    <a href="login.html" class="btn btn-outline" style="justify-content:center;">Log In</a>
+    <a href="signup.html" class="btn btn-red" style="justify-content:center;">Get Started 👻</a>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toastIcon">👻</span><span id="toastMsg">Welcome!</span></div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">
+    <img src="logo.png" alt="GhostMessage"/>
+    <span>GhostMessage</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="login.html" class="btn btn-outline">Log In</a>
+    <a href="signup.html" class="btn btn-red">Get Started 👻</a>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid">
+    <div>
+      <div class="hero-badge">✨ &nbsp;100% Anonymous. Zero Traces.</div>
+      <h1>Messages That<br/><em>Vanish Like Ghosts</em></h1>
+      <p>Create your anonymous link, share it with anyone, and receive brutally honest messages. No names. No faces. Just raw truth.</p>
+      <div class="hero-btns">
+        <a href="signup.html" class="btn btn-red">Create Free Account</a>
+        <a href="#how" class="btn btn-outline">How It Works ↓</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="hstat-num">10K+</div><div class="hstat-label">Ghosts Active</div></div>
+        <div><div class="hstat-num">500K+</div><div class="hstat-label">Messages Sent</div></div>
+        <div><div class="hstat-num">100%</div><div class="hstat-label">Anonymous</div></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="ghost-wrap">
+        <div class="ghost-ring"></div>
+        <div class="ghost-ring"></div>
+        <div class="ghost-ring"></div>
+        <div class="ghost-svg-main">
+          <svg width="150" height="180" viewBox="0 0 150 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M75 8C34 8 8 42 8 80L8 168L28 148L48 168L68 148L88 168L108 148L128 168L142 148L142 80C142 42 116 8 75 8Z" fill="rgba(255,255,255,0.92)" filter="url(#glow)"/>
+            <circle cx="57" cy="76" r="11" fill="#111"/>
+            <circle cx="93" cy="76" r="11" fill="#111"/>
+            <circle cx="60" cy="73" r="3.5" fill="white"/>
+            <circle cx="96" cy="73" r="3.5" fill="white"/>
+            <path d="M60 100 Q75 112 90 100" stroke="#555" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <defs>
+              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="6" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+          </svg>
+        </div>
+        <div class="mini-ghosts">
+          <span>👻</span><span>💬</span><span>✉️</span><span>🔮</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how fade-in" id="how">
+  <div class="container">
+    <div class="how-header">
+      <div class="section-label">How It Works</div>
+      <h2 class="section-title">Three steps to ghostly freedom</h2>
+      <p class="section-sub" style="max-width:520px;margin:0 auto;">Be up and receiving anonymous messages in under 60 seconds.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card fade-in">
+        <div class="step-bg-num" style="color:var(--red)">01</div>
+        <span class="step-icon">👤</span>
+        <h3>Create Your Account</h3>
+        <p>Sign up with just a username and password. No email required. Be up in under 30 seconds.</p>
+      </div>
+      <div class="step-card fade-in">
+        <div class="step-bg-num" style="color:var(--yellow)">02</div>
+        <span class="step-icon">🔗</span>
+        <h3>Share Your Ghost Link</h3>
+        <p>Get your unique link and share it on social media, WhatsApp status, or anywhere you like.</p>
+      </div>
+      <div class="step-card fade-in">
+        <div class="step-bg-num" style="color:var(--green)">03</div>
+        <span class="step-icon">📨</span>
+        <h3>Receive Secret Messages</h3>
+        <p>Anyone who clicks your link can send you a message. You'll never know who sent it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features fade-in" id="features">
+  <div class="container">
+    <div class="feat-header">
+      <div>
+        <div class="section-label">Features</div>
+        <h2 class="section-title">Built for real anonymity</h2>
+      </div>
+      <p class="section-sub">Every feature is designed with one goal: make your identity invisible while keeping the messages real.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card fade-in"><span class="feat-icon">🔒</span><h4>Zero Identity Leaks</h4><p>Senders are never tracked. Names and profiles stay completely hidden.</p><span class="tag t-red">Privacy First</span></div>
+      <div class="feat-card fade-in"><span class="feat-icon">⚡</span><h4>Instant Delivery</h4><p>Messages appear in your dashboard the moment they're sent.</p><span class="tag t-green">Real-time</span></div>
+      <div class="feat-card fade-in"><span class="feat-icon">🛡️</span><h4>Spam Protection</h4><p>Smart cooldown prevents flooding. Only meaningful messages get through.</p><span class="tag t-yellow">Secured</span></div>
+      <div class="feat-card fade-in"><span class="feat-icon">📱</span><h4>Mobile Ready</h4><p>Fully responsive on every device and screen size.</p><span class="tag t-green">Responsive</span></div>
+      <div class="feat-card fade-in"><span class="feat-icon">🎨</span><h4>Custom Profile</h4><p>Choose avatar colors and personalize your ghost profile page.</p><span class="tag t-red">Customizable</span></div>
+      <div class="feat-card fade-in"><span class="feat-icon">🗂️</span><h4>Message Dashboard</h4><p>Organize, read, and delete messages from your clean inbox.</p><span class="tag t-yellow">Organized</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi fade-in">
+  <div class="container" style="text-align:center;">
+    <div class="section-label">Testimonials</div>
+    <h2 class="section-title">What people are saying 👻</h2>
+    <div class="testi-grid">
+      <div class="testi-card fade-in">
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <div class="testi-quote">"</div>
+        <p class="testi-text">I posted my GhostMessage link on Twitter and got over 30 honest messages in one night. Some made me cry, some made me laugh.</p>
+        <div class="testi-author">
+          <div class="tav" style="background:linear-gradient(135deg,var(--red),#900)">K</div>
+          <div><div class="tname">Kwame A.</div><div class="thandle">@kwame_gh</div></div>
+        </div>
+      </div>
+      <div class="testi-card fade-in">
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <div class="testi-quote">"</div>
+        <p class="testi-text">Finally an anonymous platform that's actually clean and modern. Love the ghost theme. My friends are obsessed.</p>
+        <div class="testi-author">
+          <div class="tav" style="background:linear-gradient(135deg,var(--green),#0a5)">A</div>
+          <div><div class="tname">Abena S.</div><div class="thandle">@abena.oti</div></div>
+        </div>
+      </div>
+      <div class="testi-card fade-in">
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <div class="testi-quote">"</div>
+        <p class="testi-text">The UI is insane! Ibratech — you have serious talent. This feels like a real startup app, not a side project.</p>
+        <div class="testi-author">
+          <div class="tav" style="background:linear-gradient(135deg,var(--yellow),#a80)">T</div>
+          <div><div class="tname">Tunde B.</div><div class="thandle">@tbola_dev</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq fade-in" id="faq">
+  <div class="container" style="text-align:center;">
+    <div class="section-label">FAQ</div>
+    <h2 class="section-title">Got questions? Ghosts have answers.</h2>
+    <div class="faq-inner">
+      <div class="faq-item">
+        <div class="faq-q">Can the person really not see who messaged them? <span class="faq-chevron">▾</span></div>
+        <div class="faq-a"><div class="faq-a-inner">100% correct. GhostMessage never stores or reveals sender information. The recipient only sees the message text — nothing else.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Do I need an email address to sign up? <span class="faq-chevron">▾</span></div>
+        <div class="faq-a"><div class="faq-a-inner">No email required! Just choose a username and password. That's it. We keep signup as frictionless as possible.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How do I share my anonymous message link? <span class="faq-chevron">▾</span></div>
+        <div class="faq-a"><div class="faq-a-inner">After signing up, your dashboard gives you a unique link. Copy it and share it on WhatsApp, Instagram bio, Twitter, TikTok — anywhere!</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is there a limit to how many messages I can receive? <span class="faq-chevron">▾</span></div>
+        <div class="faq-a"><div class="faq-a-inner">No limits! Receive as many messages as you want. Spam protection prevents abuse, but genuine messages always get through.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I delete messages I don't like? <span class="faq-chevron">▾</span></div>
+        <div class="faq-a"><div class="faq-a-inner">Absolutely. You have full control over your inbox. Delete any message with one click — it's gone permanently.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Where is my data stored? <span class="faq-chevron">▾</span></div>
+        <div class="faq-a"><div class="faq-a-inner">Your data lives in your browser's local storage. Nothing is sent to external servers. Private and local to your device.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section fade-in">
+  <div class="container">
+    <div class="cta-ghost">👻</div>
+    <h2>Ready to go ghost?</h2>
+    <p>Join thousands already receiving anonymous messages. Free, fun, and completely private.</p>
+    <div class="cta-btns">
+      <a href="signup.html" class="btn btn-red" style="font-size:1rem;padding:0.85rem 2rem;">Start for Free — No Email</a>
+      <a href="https://wa.me/233554196068?text=Hi%20Ibratech!%20I%20want%20to%20know%20more%20about%20GhostMessage" target="_blank" class="btn btn-green">Chat on WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="logo.png" alt="GhostMessage"/>
+      <p>GhostMessage is an anonymous messaging platform built by Ibratech in Ghana 🇬🇭. Send truth. Stay hidden. 👻</p>
+      <div class="f-social">
+        <a href="#" class="fsoc">𝕏</a>
+        <a href="#" class="fsoc">ig</a>
+        <a href="https://wa.me/233554196068" target="_blank" class="fsoc">wa</a>
+      </div>
+    </div>
+    <div class="fcol"><h5>Product</h5><ul><li><a href="signup.html">Sign Up</a></li><li><a href="login.html">Log In</a></li><li><a href="dashboard.html">Dashboard</a></li><li><a href="settings.html">Settings</a></li></ul></div>
+    <div class="fcol"><h5>Legal</h5><ul><li><a href="terms.html">Terms of Service</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+    <div class="fcol"><h5>Developer</h5><ul><li><a href="https://wa.me/233554196068" target="_blank">Ibratech</a></li><li><a href="https://wa.me/233554196068" target="_blank">WhatsApp: 0554196068</a></li><li><a href="https://ibratech-dev.vercel.app" target="_blank">Portfolio</a></li><li><a href="#">Ghana 🇬🇭</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 GhostMessage. Built by <a href="https://wa.me/233554196068">Ibratech</a> · Ibrahim Mohammed Lotsu · 0554196068</p>
+    <p>Stay anonymous. Stay ghostly. 👻</p>
+  </div>
+</footer>
+
+<!-- WA FLOAT -->
+<a href="https://wa.me/233554196068" target="_blank" class="wa-float" title="Chat with Ibratech on WhatsApp">💬</a>
+
+<!-- CHATBOT STYLES -->
+<style>
+.gm-chat-bubble{position:fixed;bottom:2rem;right:2rem;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#e63946,#c1121f);display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;z-index:8000;box-shadow:0 4px 24px rgba(230,57,70,0.5);animation:chatPulse 2.5s ease-in-out infinite;border:none;transition:transform 0.2s;}
+.gm-chat-bubble:hover{transform:scale(1.1);}
+@keyframes chatPulse{0%,100%{box-shadow:0 4px 24px rgba(230,57,70,0.5);}50%{box-shadow:0 4px 40px rgba(230,57,70,0.8);}}
+.gm-chat-panel{position:fixed;bottom:5.5rem;right:2rem;width:360px;max-height:520px;background:#16161e;border:1px solid rgba(255,255,255,0.08);border-radius:20px;display:flex;flex-direction:column;z-index:8000;box-shadow:0 24px 80px rgba(0,0,0,0.6);transform:scale(0.9) translateY(20px);opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);}
+.gm-chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}
+.gm-chat-head{padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.75rem;background:linear-gradient(135deg,rgba(230,57,70,0.15),rgba(45,198,83,0.05));border-radius:20px 20px 0 0;}
+.gm-chat-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#e63946,#2dc653);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.gm-chat-info{flex:1;}.gm-chat-info strong{display:block;font-size:0.9rem;color:#e8e8f0;font-family:'Space Grotesk',sans-serif;}.gm-chat-info span{font-size:0.72rem;color:#2dc653;}
+.gm-chat-close{background:none;border:none;color:#888899;cursor:pointer;font-size:1.2rem;transition:color 0.2s;padding:0.25rem;}.gm-chat-close:hover{color:#e8e8f0;}
+.gm-chat-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.75rem;min-height:200px;max-height:320px;}
+.gm-chat-messages::-webkit-scrollbar{width:4px;}.gm-chat-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+.gm-msg{max-width:82%;padding:0.65rem 0.9rem;border-radius:14px;font-size:0.84rem;line-height:1.5;font-family:'Space Grotesk',sans-serif;word-break:break-word;}
+.gm-msg.bot{background:rgba(255,255,255,0.06);color:#e8e8f0;border-bottom-left-radius:4px;align-self:flex-start;}
+.gm-msg.user{background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;border-bottom-right-radius:4px;align-self:flex-end;}
+.gm-typing-dots{display:inline-flex;gap:3px;align-items:center;padding:0.2rem 0;}.gm-typing-dots span{width:5px;height:5px;background:#888899;border-radius:50%;animation:typingB 1.2s infinite;}.gm-typing-dots span:nth-child(2){animation-delay:0.2s;}.gm-typing-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes typingB{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}
+.gm-quick-chips{display:flex;flex-wrap:wrap;gap:0.4rem;padding:0 1rem 0.5rem;}
+.gm-chip{padding:0.3rem 0.7rem;border-radius:50px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#888899;font-size:0.73rem;cursor:pointer;transition:all 0.2s;font-family:'Space Grotesk',sans-serif;white-space:nowrap;}
+.gm-chip:hover{border-color:#2dc653;color:#2dc653;}
+.gm-chat-input-row{padding:0.75rem 1rem;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:0.5rem;border-radius:0 0 20px 20px;}
+.gm-chat-input{flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;padding:0.6rem 0.85rem;color:#e8e8f0;font-family:'Space Grotesk',sans-serif;font-size:0.84rem;outline:none;transition:border-color 0.2s;}.gm-chat-input:focus{border-color:#2dc653;}.gm-chat-input::placeholder{color:#555566;}
+.gm-chat-send{width:36px;height:36px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.9rem;transition:all 0.2s;flex-shrink:0;align-self:center;}.gm-chat-send:hover{transform:scale(1.05);}.gm-chat-send:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.gm-wa-link{color:#25d366;text-decoration:none;font-weight:600;}.gm-wa-link:hover{text-decoration:underline;}
+@media(max-width:480px){.gm-chat-panel{width:calc(100vw - 2rem);right:1rem;bottom:5rem;}.gm-chat-bubble{bottom:1.5rem;right:1rem;}}
+</style>
+
+<!-- CHATBOT HTML -->
+<button class="gm-chat-bubble" id="gmChatBubble" onclick="gmToggleChat()" title="Ask GhostBot">👻</button>
+<div class="gm-chat-panel" id="gmChatPanel">
+  <div class="gm-chat-head">
+    <div class="gm-chat-avatar">👻</div>
+    <div class="gm-chat-info"><strong>GhostBot</strong><span>● Online — here to help</span></div>
+    <button class="gm-chat-close" onclick="gmToggleChat()">✕</button>
+  </div>
+  <div class="gm-chat-messages" id="gmMessages"></div>
+  <div class="gm-quick-chips" id="gmChips">
+    <span class="gm-chip" onclick="gmSendChip(this)">How does it work?</span>
+    <span class="gm-chip" onclick="gmSendChip(this)">Is it truly anonymous?</span>
+    <span class="gm-chip" onclick="gmSendChip(this)">How to share my link?</span>
+    <span class="gm-chip" onclick="gmSendChip(this)">Delete a message?</span>
+  </div>
+  <div class="gm-chat-input-row">
+    <input class="gm-chat-input" id="gmChatInput" placeholder="Ask GhostBot anything..." maxlength="300" onkeydown="if(event.key==='Enter')gmSend()"/>
+    <button class="gm-chat-send" id="gmSendBtn" onclick="gmSend()">➤</button>
+  </div>
+</div>
+
+<script>
+// LOADER
+window.addEventListener('load',()=>{
+  setTimeout(()=>{document.getElementById('loader').classList.add('hidden');setTimeout(()=>document.getElementById('loader').remove(),500);},1800);
+});
+
+// PARTICLES
+(function(){
+  const c=document.getElementById('bgCanvas'),ctx=c.getContext('2d');
+  c.width=window.innerWidth;c.height=window.innerHeight;
+  window.addEventListener('resize',()=>{c.width=window.innerWidth;c.height=window.innerHeight;});
+  const cols=['rgba(230,57,70,','rgba(45,198,83,','rgba(255,214,10,','rgba(255,255,255,'];
+  const pts=Array.from({length:55},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2+0.4,vx:(Math.random()-0.5)*0.4,vy:(Math.random()-0.5)*0.4,a:Math.random()*0.5+0.1,col:cols[Math.floor(Math.random()*cols.length)]}));
+  function draw(){ctx.clearRect(0,0,c.width,c.height);pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.col+p.a+')';ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>c.width)p.vx*=-1;if(p.y<0||p.y>c.height)p.vy*=-1;});requestAnimationFrame(draw);}
+  draw();
+})();
+
+// NAVBAR SCROLL
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',scrollY>50));
+
+// MOBILE MENU
+function toggleMenu(){
+  const open=document.getElementById('mobileMenu').classList.toggle('open');
+  document.getElementById('mobOverlay').classList.toggle('show',open);
+  document.getElementById('hamburger').classList.toggle('open',open);
+}
+function closeMenu(){
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('mobOverlay').classList.remove('show');
+  document.getElementById('hamburger').classList.remove('open');
+}
+
+// FAQ
+document.querySelectorAll('.faq-q').forEach(q=>{
+  q.addEventListener('click',()=>{
+    const item=q.parentElement;const wasOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+    if(!wasOpen)item.classList.add('open');
+  });
+});
+
+// SCROLL OBSERVER
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
+// TOAST
+function showToast(msg,icon='👻'){document.getElementById('toastMsg').textContent=msg;document.getElementById('toastIcon').textContent=icon;const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
+setTimeout(()=>showToast('Welcome to GhostMessage! 👻 Get your free link.'),2500);
+
+// CHATBOT
+(function(){
+  let gmOpen=false,gmHistory=[],gmBotBusy=false;
+  const SYS=`You are GhostBot, the friendly AI assistant for GhostMessage — an anonymous messaging platform by Ibratech (Ibrahim Mohammed Lotsu), Accra, Ghana. Personality: warm, witty, ghost-themed. Use 👻 occasionally.\n\nAbout GhostMessage:\n- Free signup (username+password, no email)\n- Users get a unique anonymous link\n- Anyone can send anonymous messages — sender NEVER revealed\n- Dashboard to read/delete messages\n- Spam protection (30s cooldown between sends)\n- Built with HTML/CSS/JS + localStorage\n- Developer: Ibrahim Mohammed Lotsu | Brand: Ibratech | WhatsApp: +233554196068 | Ghana\n\nIf you cannot help, say something friendly and redirect: "Contact Ibrahim on WhatsApp: https://wa.me/233554196068"\n\nKeep answers to 2-4 sentences. Don't invent features.`;
+  window.gmToggleChat=function(){gmOpen=!gmOpen;document.getElementById('gmChatPanel').classList.toggle('open',gmOpen);document.getElementById('gmChatBubble').textContent=gmOpen?'✕':'👻';if(gmOpen&&gmHistory.length===0)setTimeout(()=>gmAdd('bot',"Hey! 👻 I'm GhostBot. Ask me anything about GhostMessage — how it works, privacy, sharing your link, or anything else!"),300);if(gmOpen)setTimeout(()=>document.getElementById('gmChatInput').focus(),400);};
+  window.gmSendChip=function(el){const t=el.textContent;document.getElementById('gmChips').style.display='none';gmAdd('user',t);gmCall(t);};
+  window.gmSend=function(){const inp=document.getElementById('gmChatInput');const t=inp.value.trim();if(!t||gmBotBusy)return;inp.value='';document.getElementById('gmChips').style.display='none';gmAdd('user',t);gmCall(t);};
+  function gmAdd(role,text){const d=document.createElement('div');d.className='gm-msg '+role;d.innerHTML=text;document.getElementById('gmMessages').appendChild(d);document.getElementById('gmMessages').scrollTop=99999;return d;}
+  async function gmCall(msg){
+    gmBotBusy=true;document.getElementById('gmSendBtn').disabled=true;
+    gmHistory.push({role:'user',content:msg});
+    const tEl=document.createElement('div');tEl.className='gm-msg bot';tEl.innerHTML='<div class="gm-typing-dots"><span></span><span></span><span></span></div>';document.getElementById('gmMessages').appendChild(tEl);document.getElementById('gmMessages').scrollTop=99999;
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:SYS,messages:gmHistory})});
+      const data=await res.json();
+      const reply=(data.content&&data.content[0]?data.content[0].text:"I'm having trouble right now 👻 Please reach Ibrahim: <a class='gm-wa-link' href='https://wa.me/233554196068' target='_blank'>WhatsApp</a>");
+      tEl.remove();const fmt=reply.replace(/https:\/\/wa\.me\/\S+/g,u=>`<a class='gm-wa-link' href='${u}' target='_blank'>${u}</a>`);gmAdd('bot',fmt);gmHistory.push({role:'assistant',content:reply});if(gmHistory.length>20)gmHistory=gmHistory.slice(-16);
+    }catch(e){tEl.remove();gmAdd('bot',"Something spooked me! 👻 Reach Ibrahim directly: <a class='gm-wa-link' href='https://wa.me/233554196068' target='_blank'>+233554196068</a>");}
+    gmBotBusy=false;document.getElementById('gmSendBtn').disabled=false;
+  }
+})();
+</script>
+</body>
+</html>
