@@ -40,8 +40,7 @@ canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
 /* BACK TIMER */
 .back-timer{margin-top:2rem;font-size:0.8rem;color:var(--muted);}
 .back-timer span{color:var(--red);font-weight:700;}
-/* CHATBOT */
-.gm-chat-bubble{position:fixed;bottom:2rem;right:2rem;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#e63946,#c1121f);display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;z-index:8000;box-shadow:0 4px 22px rgba(230,57,70,0.5);border:none;transition:transform 0.2s;}.gm-chat-bubble:hover{transform:scale(1.1);}.gm-chat-panel{position:fixed;bottom:5.2rem;right:2rem;width:340px;max-height:480px;background:#16161e;border:1px solid rgba(255,255,255,0.08);border-radius:20px;display:flex;flex-direction:column;z-index:8000;box-shadow:0 24px 80px rgba(0,0,0,0.6);transform:scale(0.9) translateY(20px);opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);}.gm-chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}.gm-chat-head{padding:0.9rem 1.15rem;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.7rem;background:linear-gradient(135deg,rgba(230,57,70,0.15),rgba(45,198,83,0.05));border-radius:20px 20px 0 0;}.gm-chat-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#e63946,#2dc653);display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0;}.gm-chat-info{flex:1;}.gm-chat-info strong{display:block;font-size:0.86rem;color:#e8e8f0;}.gm-chat-info span{font-size:0.68rem;color:#2dc653;}.gm-chat-close{background:none;border:none;color:#888899;cursor:pointer;font-size:1.1rem;padding:0.2rem;}.gm-chat-messages{flex:1;overflow-y:auto;padding:0.9rem;display:flex;flex-direction:column;gap:0.65rem;min-height:160px;max-height:270px;}.gm-msg{max-width:82%;padding:0.6rem 0.85rem;border-radius:14px;font-size:0.82rem;line-height:1.5;word-break:break-word;}.gm-msg.bot{background:rgba(255,255,255,0.06);color:#e8e8f0;border-bottom-left-radius:4px;align-self:flex-start;}.gm-msg.user{background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;border-bottom-right-radius:4px;align-self:flex-end;}.gm-typing-dots{display:inline-flex;gap:3px;align-items:center;}.gm-typing-dots span{width:5px;height:5px;background:#888899;border-radius:50%;animation:tB 1.2s infinite;}.gm-typing-dots span:nth-child(2){animation-delay:0.2s;}.gm-typing-dots span:nth-child(3){animation-delay:0.4s;}@keyframes tB{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}.gm-quick-chips{display:flex;flex-wrap:wrap;gap:0.35rem;padding:0 0.9rem 0.45rem;}.gm-chip{padding:0.27rem 0.62rem;border-radius:50px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#888899;font-size:0.7rem;cursor:pointer;transition:all 0.2s;}.gm-chip:hover{border-color:#2dc653;color:#2dc653;}.gm-chat-input-row{padding:0.65rem 0.9rem;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:0.45rem;}.gm-chat-input{flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;padding:0.52rem 0.75rem;color:#e8e8f0;font-family:'Space Grotesk',sans-serif;font-size:0.8rem;outline:none;transition:border-color 0.2s;}.gm-chat-input:focus{border-color:#2dc653;}.gm-chat-input::placeholder{color:#555566;}.gm-chat-send{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.82rem;transition:all 0.2s;flex-shrink:0;align-self:center;}.gm-chat-send:disabled{opacity:0.4;cursor:not-allowed;}.gm-wa-link{color:#25d366;text-decoration:none;font-weight:600;}@media(max-width:480px){.gm-chat-panel{width:calc(100vw - 1.5rem);right:0.75rem;}.gm-chat-bubble{right:1rem;}}
+@media(max-width:480px){.gm-chat-panel{width:calc(100vw - 1.5rem);right:0.75rem;}.gm-chat-bubble{right:1rem;}}
 </style>
 </head>
 <body>
@@ -88,17 +87,6 @@ canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
   <div class="back-timer">Redirecting to home in <span id="countdown">10</span> seconds...</div>
 </div>
 
-<button class="gm-chat-bubble" id="gmChatBubble" onclick="gmToggleChat()">👻</button>
-<div class="gm-chat-panel" id="gmChatPanel">
-  <div class="gm-chat-head"><div class="gm-chat-avatar">👻</div><div class="gm-chat-info"><strong>GhostBot</strong><span>● Online</span></div><button class="gm-chat-close" onclick="gmToggleChat()">✕</button></div>
-  <div class="gm-chat-messages" id="gmMessages"></div>
-  <div class="gm-quick-chips" id="gmChips">
-    <span class="gm-chip" onclick="gmSendChip(this)">Take me home</span>
-    <span class="gm-chip" onclick="gmSendChip(this)">What is GhostMessage?</span>
-  </div>
-  <div class="gm-chat-input-row"><input class="gm-chat-input" id="gmChatInput" placeholder="Ask GhostBot..." maxlength="300" onkeydown="if(event.key==='Enter')gmSend()"/><button class="gm-chat-send" id="gmSendBtn" onclick="gmSend()">➤</button></div>
-</div>
-
 <script>
 // PARTICLES
 (function(){const c=document.getElementById('c'),ctx=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;window.addEventListener('resize',()=>{c.width=innerWidth;c.height=innerHeight;});const cols=['rgba(230,57,70,','rgba(45,198,83,','rgba(255,214,10,'];const pts=Array.from({length:35},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.8+0.4,vx:(Math.random()-0.5)*0.35,vy:(Math.random()-0.5)*0.35,a:Math.random()*0.4+0.08,col:cols[Math.floor(Math.random()*cols.length)]}));function draw(){ctx.clearRect(0,0,c.width,c.height);pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.col+p.a+')';ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>c.width)p.vx*=-1;if(p.y<0||p.y>c.height)p.vy*=-1;});requestAnimationFrame(draw);}draw();})();
@@ -111,15 +99,438 @@ const iv=setInterval(()=>{count--;cd.textContent=count;if(count<=0){clearInterva
 document.addEventListener('click',()=>clearInterval(iv),{once:true});
 document.addEventListener('keydown',()=>clearInterval(iv),{once:true});
 
-// CHATBOT
-(function(){let o=false,h=[],busy=false;const SYS=`You are GhostBot, friendly AI for GhostMessage by Ibratech (Ibrahim Mohammed Lotsu), Ghana. The user hit a 404 page. Help them navigate: homepage is index.html, dashboard is dashboard.html, signup is signup.html, login is login.html. GhostMessage is an anonymous messaging platform. Developer WhatsApp: +233554196068. Be warm and ghost-themed. Short answers.`;
-window.gmToggleChat=function(){o=!o;document.getElementById('gmChatPanel').classList.toggle('open',o);document.getElementById('gmChatBubble').textContent=o?'✕':'👻';if(o&&h.length===0)setTimeout(()=>add('bot',"Oops! Looks like you found a ghost town 👻 This page doesn't exist. Can I help you find what you're looking for?"),300);if(o)setTimeout(()=>document.getElementById('gmChatInput').focus(),400);};
-window.gmSendChip=function(el){const t=el.textContent;document.getElementById('gmChips').style.display='none';add('user',t);if(t==='Take me home'){add('bot','Sure! Heading home now 👻');setTimeout(()=>window.location.href='index.html',800);return;}call(t);};
-window.gmSend=function(){const inp=document.getElementById('gmChatInput');const t=inp.value.trim();if(!t||busy)return;inp.value='';document.getElementById('gmChips').style.display='none';add('user',t);call(t);};
-function add(r,text){const d=document.createElement('div');d.className='gm-msg '+r;d.innerHTML=text;document.getElementById('gmMessages').appendChild(d);document.getElementById('gmMessages').scrollTop=99999;return d;}
-async function call(msg){busy=true;document.getElementById('gmSendBtn').disabled=true;h.push({role:'user',content:msg});const tEl=document.createElement('div');tEl.className='gm-msg bot';tEl.innerHTML='<div class="gm-typing-dots"><span></span><span></span><span></span></div>';document.getElementById('gmMessages').appendChild(tEl);document.getElementById('gmMessages').scrollTop=99999;
-try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:SYS,messages:h})});const data=await r.json();const reply=data.content&&data.content[0]?data.content[0].text:"Hmm, I'm a bit lost too 👻 Try going <a href='index.html'>home</a>!";tEl.remove();const fmt=reply.replace(/https:\/\/wa\.me\/\S+/g,u=>`<a class='gm-wa-link' href='${u}' target='_blank'>${u}</a>`);add('bot',fmt);h.push({role:'assistant',content:reply});if(h.length>20)h=h.slice(-16);}catch(e){tEl.remove();add('bot',"Lost in the ghost zone! 👻 Try <a href='index.html'>going home</a>.");}
-busy=false;document.getElementById('gmSendBtn').disabled=false;}})();
+
+</script>
+
+<!-- GhostBot — Rule-based chatbot -->
+<script>
+// ============================================================
+// GHOSTBOT — Rule-based chatbot (no API needed)
+// ============================================================
+(function(){
+  let gmOpen=false;
+  const WA='https://wa.me/233554196068';
+  const WA_NUM='0554196068';
+
+  // ---- KNOWLEDGE BASE ----
+  const KB=[
+    // HOW IT WORKS
+    {
+      keys:['how','work','does','explain','what is','ghostmessage','platform','about'],
+      ans:`GhostMessage lets you receive honest anonymous messages from anyone 👻<br><br>
+        <b>How it works:</b><br>
+        1️⃣ Create a free account (no email needed)<br>
+        2️⃣ Get your unique anonymous link<br>
+        3️⃣ Share it anywhere — WhatsApp, Instagram, TikTok<br>
+        4️⃣ Anyone who clicks it can send you a message<br>
+        5️⃣ You read messages on your dashboard<br><br>
+        The sender is <b>never</b> revealed. 🔒`
+    },
+    // ANONYMOUS
+    {
+      keys:['anonymous','identity','reveal','know who','sender','track','trace','hide','hidden','private'],
+      ans:`Yes — 100% anonymous 👻<br><br>
+        When someone sends you a message:<br>
+        • Their name is <b>never</b> stored<br>
+        • Their IP address is <b>never</b> logged<br>
+        • No account is needed to send<br>
+        • Nothing links the message back to them<br><br>
+        The sender is completely invisible. That's the whole point!`
+    },
+    // SIGNUP / CREATE ACCOUNT
+    {
+      keys:['sign up','signup','create account','register','join','get started','new account'],
+      ans:`Creating an account is super easy and free! 🎉<br><br>
+        1. Click <b>"Get Started"</b> on the homepage<br>
+        2. Choose a username (letters, numbers, underscore only)<br>
+        3. Set a password (min 6 characters)<br>
+        4. Click <b>"Create My Ghost Account"</b><br><br>
+        No email needed. Takes about 30 seconds! ⚡`
+    },
+    // LOGIN
+    {
+      keys:['log in','login','sign in','signin','cant login','can\'t login','forgot','password','access account'],
+      ans:`To log in:<br><br>
+        1. Click <b>"Log In"</b> at the top of the page<br>
+        2. Enter your username and password<br>
+        3. Click <b>"Log In to My Account"</b><br><br>
+        <b>Forgot your password?</b> Unfortunately since we don't collect emails, we can't send a reset link. If you're truly locked out, you'll need to create a new account. 😔<br><br>
+        That's why we recommend writing your password somewhere safe!`
+    },
+    // SHARE LINK
+    {
+      keys:['share','link','copy','spread','post','whatsapp','instagram','tiktok','twitter','social'],
+      ans:`Sharing your link is how you get messages! 📤<br><br>
+        <b>Where to share:</b><br>
+        • WhatsApp status / groups<br>
+        • Instagram bio or story<br>
+        • TikTok bio or video<br>
+        • Twitter/X profile<br>
+        • Snapchat or BeReal<br><br>
+        <b>How to copy your link:</b><br>
+        Go to your Dashboard → click the green <b>"Copy Link"</b> button → paste anywhere!<br><br>
+        The more you share, the more messages you get 👻`
+    },
+    // DASHBOARD
+    {
+      keys:['dashboard','inbox','messages','read','unread','received'],
+      ans:`Your Dashboard is your GhostMessage home 📨<br><br>
+        <b>What you can do there:</b><br>
+        • See all your anonymous messages<br>
+        • Mark messages as read<br>
+        • Delete messages you don't want<br>
+        • See your stats (total messages, link visits)<br>
+        • Copy and share your anonymous link<br><br>
+        Log in at the top of the page to access it!`
+    },
+    // DELETE MESSAGE
+    {
+      keys:['delete','remove','get rid','trash','clear'],
+      ans:`You can delete any message you don't like 🗑️<br><br>
+        <b>To delete a message:</b><br>
+        1. Go to your Dashboard<br>
+        2. Find the message<br>
+        3. Click the 🗑️ button on the right<br>
+        4. Confirm deletion<br><br>
+        Deleted messages are gone permanently — they can't be recovered. You're in full control!`
+    },
+    // FREE
+    {
+      keys:['free','cost','price','pay','money','charge','subscription'],
+      ans:`GhostMessage is completely <b>FREE</b> 🎉<br><br>
+        • Free to create an account<br>
+        • Free to receive unlimited messages<br>
+        • Free to share your link<br>
+        • No hidden charges<br>
+        • No credit card needed<br><br>
+        Just sign up and start receiving honest messages!`
+    },
+    // SPAM / SAFETY
+    {
+      keys:['spam','flood','abuse','safe','safety','protection','limit','cooldown','block','report'],
+      ans:`GhostMessage has spam protection built in 🛡️<br><br>
+        • Senders must wait <b>30 seconds</b> between messages<br>
+        • This prevents message flooding<br>
+        • You can delete any unwanted message instantly<br>
+        • You can clear your entire inbox at once<br><br>
+        If you're being seriously harassed, contact Ibratech on WhatsApp for help: <a href="${WA}" target="_blank" class="gm-wa-link">${WA_NUM}</a>`
+    },
+    // PROFILE / SETTINGS
+    {
+      keys:['profile','settings','username','display name','avatar','color','change','update','customize'],
+      ans:`You can customize your profile from Settings ⚙️<br><br>
+        <b>What you can change:</b><br>
+        • Display name (what senders see)<br>
+        • Avatar color<br>
+        • Password<br>
+        • Sound preferences<br>
+        • Animation preferences<br>
+        • Notification preferences<br><br>
+        Note: <b>Usernames cannot be changed</b> after signup — they're permanent.`
+    },
+    // DATA / PRIVACY
+    {
+      keys:['data','privacy','store','stored','server','database','safe','secure','gdpr'],
+      ans:`Your privacy is our top priority 🔒<br><br>
+        • Passwords are <b>hashed with bcrypt</b> — never stored in plaintext<br>
+        • Sender identity is <b>never collected or stored</b><br>
+        • Your messages are stored securely on Supabase (PostgreSQL)<br>
+        • No email address is ever collected<br>
+        • No advertising or tracking scripts<br><br>
+        Read our full <a href="privacy.html" class="gm-wa-link">Privacy Policy</a> for details.`
+    },
+    // MESSAGE PAGE
+    {
+      keys:['message page','send message','send anon','send a message','send to','how to send'],
+      ans:`To send someone an anonymous message 👻<br><br>
+        1. Get their GhostMessage link (they share it with you)<br>
+        2. Click the link — it opens their message page<br>
+        3. Type your message (max 500 characters)<br>
+        4. Click <b>"Send Anonymously"</b><br>
+        5. Done! They'll never know it was you 😏<br><br>
+        You don't need an account to send messages — just a link!`
+    },
+    // LINK VISITS
+    {
+      keys:['visits','views','link visits','how many','stats','statistics'],
+      ans:`Your Dashboard shows your stats 📊<br><br>
+        • <b>Total messages</b> — all messages ever received<br>
+        • <b>Unread</b> — messages you haven't opened yet<br>
+        • <b>Read</b> — messages you've already seen<br>
+        • <b>Link Visits</b> — how many times your link was opened<br><br>
+        The link visits counter goes up every time someone clicks your anonymous link, even if they don't send a message.`
+    },
+    // CONTACT / SUPPORT
+    {
+      keys:['contact','support','help','ibratech','ibrahim','developer','built','who made','creator','ghana'],
+      ans:`GhostMessage was built by <b>Ibratech</b> 👨‍💻<br><br>
+        <b>Developer:</b> Ibrahim Mohammed Lotsu<br>
+        <b>Brand:</b> Ibratech<br>
+        <b>Country:</b> Accra, Ghana 🇬🇭<br>
+        <b>Portfolio:</b> <a href="https://ibratech-dev.vercel.app" target="_blank" class="gm-wa-link">ibratech-dev.vercel.app</a><br><br>
+        For support, reach Ibrahim directly on WhatsApp:<br>
+        <a href="${WA}" target="_blank" class="gm-wa-link">💬 Chat on WhatsApp — ${WA_NUM}</a>`
+    },
+    // TERMS
+    {
+      keys:['terms','terms of service','rules','policy','legal','allowed','not allowed','banned','prohibited'],
+      ans:`GhostMessage has simple rules 📜<br><br>
+        <b>Not allowed:</b><br>
+        • Harassment or threats<br>
+        • Hate speech of any kind<br>
+        • Spam or flooding<br>
+        • Illegal content<br>
+        • Sending messages to minors inappropriately<br><br>
+        You must be <b>13 or older</b> to use GhostMessage.<br><br>
+        Read the full <a href="terms.html" class="gm-wa-link">Terms of Service</a> for details.`
+    },
+    // REALTIME
+    {
+      keys:['realtime','real time','instant','notification','notify','alert','ping','new message'],
+      ans:`Yes! GhostMessage has real-time notifications 🔔<br><br>
+        When someone sends you a message:<br>
+        • A notification toast pops up instantly<br>
+        • The bell icon in your dashboard lights up<br>
+        • The unread counter updates automatically<br><br>
+        You don't need to refresh the page — messages arrive live while you're on your dashboard!`
+    },
+    // MULTIPLE ACCOUNTS
+    {
+      keys:['multiple','two accounts','another account','second account'],
+      ans:`You can create multiple accounts, but each needs a different username 👻<br><br>
+        Each account gets its own unique anonymous link and separate inbox. Just sign up with a different username for each one.`
+    },
+    // HOW LONG
+    {
+      keys:['how long','expire','expiry','messages last','storage'],
+      ans:`Your messages are stored permanently until you delete them 📬<br><br>
+        They won't expire or disappear on their own. Your inbox stays intact as long as your account exists.<br><br>
+        You can delete individual messages or clear your entire inbox anytime from your dashboard.`
+    },
+  ];
+
+  // ---- FALLBACK ----
+  const FALLBACK=`Hmm, I'm not sure about that one 👻<br><br>
+    For anything I can't answer, reach Ibrahim (the developer) directly on WhatsApp — he responds fast!<br><br>
+    <a href="${WA}?text=Hi%20Ibratech!%20I%20have%20a%20question%20about%20GhostMessage" target="_blank" class="gm-wa-link">💬 Chat with Ibrahim on WhatsApp — ${WA_NUM}</a>`;
+
+  // ---- MATCH ENGINE ----
+  function getAnswer(q){
+    const lower=q.toLowerCase().trim();
+
+    // Greetings
+    if(/^(hi|hello|hey|hii|heyy|howdy|sup|yo|good morning|good evening|good afternoon|morning|evening)\b/.test(lower)){
+      return `Hey there! 👻 I'm GhostBot, your GhostMessage assistant!<br><br>I can help you with things like:<br>• How GhostMessage works<br>• How to share your link<br>• Reading your messages<br>• Account and privacy questions<br><br>What would you like to know? 😊`;
+    }
+
+    // Thanks
+    if(/thank|thanks|thank you|thx|cheers/.test(lower)){
+      return `You're welcome! 👻 Anything else I can help you with?`;
+    }
+
+    // Goodbye
+    if(/bye|goodbye|see you|later|cya/.test(lower)){
+      return `Goodbye! Stay ghostly 👻 Come back if you have more questions!`;
+    }
+
+    // Direct WhatsApp request
+    if(/whatsapp|contact|speak to|talk to|reach|call|phone|number/.test(lower)){
+      return `You can reach Ibrahim (the developer) directly on WhatsApp:<br><br><a href="${WA}" target="_blank" class="gm-wa-link">💬 +233 554 196 068</a><br><br>He's based in Accra, Ghana 🇬🇭 and responds quickly!`;
+    }
+
+    // Score-based match
+    let bestScore=0, bestAns=null;
+    for(const item of KB){
+      let score=0;
+      for(const key of item.keys){
+        if(lower.includes(key)) score++;
+      }
+      if(score>bestScore){bestScore=score;bestAns=item.ans;}
+    }
+
+    if(bestScore>=1) return bestAns;
+    return FALLBACK;
+  }
+
+  // ---- QUICK CHIPS (page-specific) ----
+  const PAGE_CHIPS={
+    'index.html':   ['How does it work?','Is it truly anonymous?','Is it free?','How to share my link?'],
+    'signup.html':  ['How do I sign up?','Is it free?','What username should I pick?','Do I need an email?'],
+    'login.html':   ['I forgot my password','How do I log in?','What is GhostMessage?'],
+    'dashboard.html':['How to share my link?','How to delete a message?','Is this really anonymous?','Contact support'],
+    'message.html': ['Is this really anonymous?','Will they know it\'s me?','Get my own link','How does this work?'],
+    'settings.html':['How to change my name?','Can I change username?','How to delete my account?'],
+    'terms.html':   ['What\'s not allowed?','Can I use this under 13?','Contact support'],
+    'privacy.html': ['Is my data safe?','Can senders be tracked?','How to delete my data?'],
+    '404.html':     ['Take me home','What is GhostMessage?','Contact support'],
+  };
+
+  function getChips(){
+    const page=location.pathname.split('/').pop()||'index.html';
+    return PAGE_CHIPS[page]||PAGE_CHIPS['index.html'];
+  }
+
+  // ---- RENDER CHATBOT HTML ----
+  function init(){
+    const style=document.createElement('style');
+    style.textContent=`
+      .gm-chat-bubble{position:fixed;bottom:2rem;right:2rem;width:56px;height:56px;border-radius:50%;
+        background:linear-gradient(135deg,#e63946,#c1121f);display:flex;align-items:center;
+        justify-content:center;font-size:1.4rem;cursor:pointer;z-index:8000;
+        box-shadow:0 4px 24px rgba(230,57,70,0.5);border:none;transition:transform 0.2s;}
+      .gm-chat-bubble:hover{transform:scale(1.1);}
+      .gm-chat-panel{position:fixed;bottom:5.5rem;right:2rem;width:360px;max-height:520px;
+        background:#16161e;border:1px solid rgba(255,255,255,0.08);border-radius:20px;
+        display:flex;flex-direction:column;z-index:8000;
+        box-shadow:0 24px 80px rgba(0,0,0,0.6);
+        transform:scale(0.9) translateY(20px);opacity:0;pointer-events:none;
+        transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);}
+      .gm-chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}
+      .gm-chat-head{padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.08);
+        display:flex;align-items:center;gap:0.75rem;
+        background:linear-gradient(135deg,rgba(230,57,70,0.15),rgba(45,198,83,0.05));
+        border-radius:20px 20px 0 0;}
+      .gm-chat-avatar{width:38px;height:38px;border-radius:50%;
+        background:linear-gradient(135deg,#e63946,#2dc653);
+        display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+      .gm-chat-info{flex:1;}
+      .gm-chat-info strong{display:block;font-size:0.9rem;color:#e8e8f0;font-family:'Space Grotesk',sans-serif;}
+      .gm-chat-info span{font-size:0.7rem;color:#2dc653;}
+      .gm-chat-close{background:none;border:none;color:#888899;cursor:pointer;font-size:1.2rem;padding:0.25rem;}
+      .gm-chat-close:hover{color:#e8e8f0;}
+      .gm-chat-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;
+        gap:0.75rem;min-height:200px;max-height:320px;}
+      .gm-chat-messages::-webkit-scrollbar{width:4px;}
+      .gm-chat-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+      .gm-msg{max-width:85%;padding:0.65rem 0.9rem;border-radius:14px;font-size:0.83rem;
+        line-height:1.6;font-family:'Space Grotesk',sans-serif;word-break:break-word;}
+      .gm-msg.bot{background:rgba(255,255,255,0.06);color:#e8e8f0;
+        border-bottom-left-radius:4px;align-self:flex-start;}
+      .gm-msg.user{background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;
+        border-bottom-right-radius:4px;align-self:flex-end;}
+      .gm-msg.typing{background:rgba(255,255,255,0.04);}
+      .gm-dots{display:inline-flex;gap:4px;align-items:center;padding:0.2rem 0;}
+      .gm-dots span{width:6px;height:6px;background:#888899;border-radius:50%;
+        animation:gmDot 1.2s infinite;}
+      .gm-dots span:nth-child(2){animation-delay:0.2s;}
+      .gm-dots span:nth-child(3){animation-delay:0.4s;}
+      @keyframes gmDot{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}
+      .gm-chips{display:flex;flex-wrap:wrap;gap:0.4rem;padding:0 1rem 0.6rem;}
+      .gm-chip{padding:0.3rem 0.75rem;border-radius:50px;border:1px solid rgba(255,255,255,0.1);
+        background:rgba(255,255,255,0.04);color:#888899;font-size:0.73rem;cursor:pointer;
+        transition:all 0.2s;font-family:'Space Grotesk',sans-serif;white-space:nowrap;}
+      .gm-chip:hover{border-color:#2dc653;color:#2dc653;}
+      .gm-chat-input-row{padding:0.75rem 1rem;border-top:1px solid rgba(255,255,255,0.08);
+        display:flex;gap:0.5rem;border-radius:0 0 20px 20px;}
+      .gm-chat-input{flex:1;background:rgba(255,255,255,0.05);
+        border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;
+        padding:0.6rem 0.85rem;color:#e8e8f0;font-family:'Space Grotesk',sans-serif;
+        font-size:0.83rem;outline:none;transition:border-color 0.2s;}
+      .gm-chat-input:focus{border-color:#2dc653;}
+      .gm-chat-input::placeholder{color:#555566;}
+      .gm-chat-send{width:36px;height:36px;border-radius:10px;border:none;cursor:pointer;
+        background:linear-gradient(135deg,#e63946,#c1121f);color:#fff;
+        display:flex;align-items:center;justify-content:center;font-size:1rem;
+        flex-shrink:0;align-self:center;transition:transform 0.2s;}
+      .gm-chat-send:hover{transform:scale(1.08);}
+      .gm-wa-link{color:#25d366;text-decoration:none;font-weight:600;}
+      .gm-wa-link:hover{text-decoration:underline;}
+      @media(max-width:480px){
+        .gm-chat-panel{width:calc(100vw - 2rem);right:1rem;bottom:5rem;}
+        .gm-chat-bubble{bottom:1.5rem;right:1rem;}
+      }
+    `;
+    document.head.appendChild(style);
+
+    const chips=getChips();
+    const html=`
+      <button class="gm-chat-bubble" id="gmBubble" onclick="gmToggle()" title="Ask GhostBot">👻</button>
+      <div class="gm-chat-panel" id="gmPanel">
+        <div class="gm-chat-head">
+          <div class="gm-chat-avatar">👻</div>
+          <div class="gm-chat-info">
+            <strong>GhostBot</strong>
+            <span>● Online — ask me anything</span>
+          </div>
+          <button class="gm-chat-close" onclick="gmToggle()">✕</button>
+        </div>
+        <div class="gm-chat-messages" id="gmMsgs"></div>
+        <div class="gm-chips" id="gmChips">
+          ${chips.map(c=>`<span class="gm-chip" onclick="gmChip(this)">${c}</span>`).join('')}
+        </div>
+        <div class="gm-chat-input-row">
+          <input class="gm-chat-input" id="gmInput" placeholder="Ask GhostBot anything..."
+            maxlength="300" onkeydown="if(event.key==='Enter')gmSend()"/>
+          <button class="gm-chat-send" onclick="gmSend()">➤</button>
+        </div>
+      </div>
+    `;
+    const wrap=document.createElement('div');
+    wrap.innerHTML=html;
+    document.body.appendChild(wrap);
+  }
+
+  // ---- ACTIONS ----
+  window.gmToggle=function(){
+    gmOpen=!gmOpen;
+    document.getElementById('gmPanel').classList.toggle('open',gmOpen);
+    document.getElementById('gmBubble').textContent=gmOpen?'✕':'👻';
+    if(gmOpen){
+      if(!document.getElementById('gmMsgs').children.length){
+        setTimeout(()=>addMsg('bot',
+          "Hey! 👻 I'm GhostBot, your GhostMessage assistant.<br>Ask me anything about the platform, and I'll do my best to help!"),300);
+      }
+      setTimeout(()=>document.getElementById('gmInput').focus(),400);
+    }
+  };
+
+  window.gmChip=function(el){
+    document.getElementById('gmChips').style.display='none';
+    const q=el.textContent;
+    addMsg('user',q);
+    setTimeout(()=>respond(q),400);
+  };
+
+  window.gmSend=function(){
+    const inp=document.getElementById('gmInput');
+    const q=inp.value.trim();
+    if(!q)return;
+    inp.value='';
+    document.getElementById('gmChips').style.display='none';
+    addMsg('user',q);
+    setTimeout(()=>respond(q),400);
+  };
+
+  function respond(q){
+    // Show typing indicator
+    const typing=addMsg('bot','<div class="gm-dots"><span></span><span></span><span></span></div>');
+    typing.classList.add('typing');
+    // Slight delay to feel natural
+    const delay=600+Math.random()*600;
+    setTimeout(()=>{
+      typing.remove();
+      addMsg('bot',getAnswer(q));
+    },delay);
+  }
+
+  function addMsg(role,html){
+    const d=document.createElement('div');
+    d.className='gm-msg '+role;
+    d.innerHTML=html;
+    const msgs=document.getElementById('gmMsgs');
+    msgs.appendChild(d);
+    msgs.scrollTop=99999;
+    return d;
+  }
+
+  // Init on DOM ready
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',init);
+  } else {
+    init();
+  }
+})();
+
 </script>
 </body>
 </html>
