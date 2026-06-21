@@ -198,6 +198,35 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 function showToast(msg,icon='👻'){document.getElementById('toastMsg').textContent=msg;document.getElementById('toastIcon').textContent=icon;const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 // Check session
 (function(){const s=localStorage.getItem('gm_session');if(s){try{const p=JSON.parse(s);if(p.username&&Date.now()-p.loggedAt<7*24*60*60*1000)window.location.href='dashboard.html';}catch(e){}}})();
+
+// ---- SUPABASE CONNECTION TEST (runs on page load) ----
+(async function(){
+  if(SUPABASE_URL.includes('YOUR-PROJECT-ID')||SUPABASE_ANON_KEY.includes('YOUR-ANON-PUBLIC-KEY')){
+    showBanner('🔴 SETUP NEEDED: You have not pasted your Supabase URL and anon key into this file yet. Open signup.html and replace the placeholder keys near the top.');
+    return;
+  }
+  try{
+    // Ping Supabase with a harmless RPC call — gm_get_profile with a dummy name will return an error
+    // but if Supabase itself is reachable and the schema is loaded, the error will be from our function,
+    // not a connection failure
+    const {data,error}=await sb.rpc('gm_get_profile',{p_username:'__connectiontest__'});
+    if(error && (error.code==='PGRST202'||error.message&&error.message.includes('Could not find'))){
+      showBanner('🔴 SQL SCHEMA NOT RUN: Supabase is reachable but the GhostMessage functions are missing. Go to Supabase → SQL Editor and run the supabase_schema.sql file.');
+    } else if(error && error.message && error.message.includes('Failed to fetch')){
+      showBanner('🔴 CANNOT REACH SUPABASE: Check that your Project URL is correct in this file.');
+    }
+    // If data comes back with success:false and error "User not found" — everything is working perfectly
+  }catch(e){
+    showBanner('🔴 CONNECTION ERROR: '+e.message+' — Check your Supabase URL in this file.');
+  }
+})();
+
+function showBanner(msg){
+  const b=document.createElement('div');
+  b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#1a0505;border-bottom:2px solid #e63946;padding:0.85rem 1.5rem;font-size:0.82rem;color:#ff8888;font-family:monospace;line-height:1.5;display:flex;align-items:flex-start;gap:0.75rem;';
+  b.innerHTML='<div style=\"flex:1;\">'+msg+'</div><button onclick=\"this.parentNode.remove()\" style=\"background:none;border:none;color:#ff8888;cursor:pointer;font-size:1.2rem;padding:0;\">✕</button>';
+  document.body.prepend(b);
+}
 function onUsername(){const v=document.getElementById('username').value.trim();const prev=document.getElementById('linkPrev');if(v.length>=2){prev.style.display='block';const b=window.location.origin+window.location.pathname.replace('signup.html','');document.getElementById('linkPrevText').textContent=b+'message.html?to='+v;}else{prev.style.display='none';}}
 function checkStrength(){const p=document.getElementById('pw').value;let s=0;if(p.length>=6)s++;if(p.length>=10)s++;if(/[A-Z]/.test(p))s++;if(/[0-9]/.test(p))s++;if(/[^a-zA-Z0-9]/.test(p))s++;const cfg=[{w:'0%',c:'transparent',l:'Enter a password'},{w:'25%',c:'#e63946',l:'Weak'},{w:'50%',c:'#ffd60a',l:'Fair'},{w:'75%',c:'#2dc653',l:'Strong'},{w:'100%',c:'#00ff88',l:'Very Strong 🔒'}];const c=cfg[Math.min(s,4)];const f=document.getElementById('strFill');f.style.width=c.w;f.style.background=c.c;const l=document.getElementById('strLabel');l.textContent=c.l;l.style.color=c.c;}
 function doSignup(){
@@ -217,7 +246,16 @@ function doSignup(){
       const {data,error}=await sb.rpc('gm_signup',{
         p_username:u, p_password:p, p_display_name:dn, p_avatar_color:ac
       });
-      if(error){btn.classList.remove('loading');btn.disabled=false;showToast('Something went wrong. Try again.','❌');console.error(error);return;}
+      if(error){
+        btn.classList.remove('loading');btn.disabled=false;
+        const em=error.message||error.hint||error.details||JSON.stringify(error);
+        let d=document.getElementById('dbgErr');
+        if(!d){d=document.createElement('div');d.id='dbgErr';d.style.cssText='background:#1a0a0a;border:1.5px solid #e63946;border-radius:10px;padding:1rem;margin-top:1rem;font-size:0.78rem;color:#ff8888;font-family:monospace;word-break:break-all;line-height:1.6;';document.getElementById('signupBtn').insertAdjacentElement('afterend',d);}
+        d.innerHTML='<strong style=\"color:#e63946;\">⚠️ Supabase Error — screenshot & send to Ibratech on WhatsApp (+233554196068):</strong><br><br><b>Message:</b> '+em+'<br><b>Code:</b> '+(error.code||'none')+'<br><b>Status:</b> '+(error.status||'none')+'<br><b>Hint:</b> '+(error.hint||'none');
+        console.error('SUPABASE ERROR:', JSON.stringify(error,null,2));
+        showToast('Supabase error — see details below','🔴');
+        return;
+      }
       if(!data.success){
         btn.classList.remove('loading');btn.disabled=false;
         document.getElementById('g-user').classList.add('err');
@@ -231,8 +269,12 @@ function doSignup(){
       setTimeout(()=>window.location.href='dashboard.html',1200);
     }catch(err){
       btn.classList.remove('loading');btn.disabled=false;
-      showToast('Network error. Check your connection.','❌');
-      console.error(err);
+      const em2=err.message||String(err);
+      let d2=document.getElementById('dbgErr');
+      if(!d2){d2=document.createElement('div');d2.id='dbgErr';d2.style.cssText='background:#1a0a0a;border:1.5px solid #e63946;border-radius:10px;padding:1rem;margin-top:1rem;font-size:0.78rem;color:#ff8888;font-family:monospace;word-break:break-all;line-height:1.6;';document.getElementById('signupBtn').insertAdjacentElement('afterend',d2);}
+      d2.innerHTML='<strong style=\"color:#e63946;\">⚠️ Network/JS Error — screenshot & send to Ibratech (+233554196068):</strong><br><br>'+em2;
+      console.error('CATCH ERROR:', err);
+      showToast('Error — see details below the button','🔴');
     }
   })();
 }
