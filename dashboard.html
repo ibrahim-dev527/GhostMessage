@@ -9,8 +9,8 @@
 /* ============================================================
    SUPABASE CONFIG — PASTE YOUR KEYS HERE
    ============================================================ */
-const SUPABASE_URL = "https://YOUR-PROJECT-ID.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR-ANON-PUBLIC-KEY-HERE";
+const SUPABASE_URL = "https://akadqjijkasftwbtwayc.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYWRxamlqa2FzZnR3YnR3YXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NDI0NzgsImV4cCI6MjA5NzMxODQ3OH0.9AgKcEtYLck2zRJ___ZG0oNYO6y03BrBUcGuwC2zVCc";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 </script>
 <style>
@@ -241,30 +241,93 @@ let SESSION=null,CU=null,MSGS=[],delTarget=null,curFilter='all',wtCur=0;
 const WT_MAX=5;
 
 document.addEventListener('DOMContentLoaded',async()=>{
-  SESSION=JSON.parse(localStorage.getItem('gm_session')||'null');
-  if(!SESSION||!SESSION.username||!SESSION.password){location.href='login.html';return;}
-
-  // Re-authenticate and pull fresh profile via login RPC (also confirms password still valid)
-  const {data:loginData,error:loginErr}=await sb.rpc('gm_login',{p_username:SESSION.username,p_password:SESSION.password});
-  if(loginErr||!loginData.success){
-    localStorage.removeItem('gm_session');
-    location.href='login.html';return;
+  // Read session from localStorage
+  try {
+    SESSION=JSON.parse(localStorage.getItem('gm_session')||'null');
+  } catch(e) {
+    SESSION=null;
   }
-  CU=loginData.user;
+
+  // Validate session exists and is not expired (7 days)
+  if(!SESSION || !SESSION.username || !SESSION.password || !SESSION.loggedAt){
+    location.href='login.html'; return;
+  }
+  const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+  if(Date.now() - SESSION.loggedAt > SEVEN_DAYS){
+    localStorage.removeItem('gm_session');
+    location.href='login.html'; return;
+  }
+
+  // Load profile and messages from Supabase
+  const profileOk = await loadProfile();
+  if(!profileOk){ location.href='login.html'; return; }
   await loadMessages();
   renderUI();
-  if(CU.is_first_login)setTimeout(()=>document.getElementById('wtBg').classList.add('show'),800);
+  if(CU && CU.is_first_login){
+    setTimeout(()=>document.getElementById('wtBg').classList.add('show'),800);
+  }
 
   // Realtime: listen for new messages addressed to this user
-  sb.channel('messages-for-'+SESSION.username)
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'recipient_username=eq.'+SESSION.username},payload=>{
-      MSGS.unshift({id:payload.new.id,text:payload.new.text,is_read:false,created_at:payload.new.created_at});
-      updateStats();renderMsgs();
-      showToast('New anonymous message! 👻','📨');
-      const b=document.getElementById('bell');b.style.transform='scale(1.3)';setTimeout(()=>b.style.transform='scale(1)',300);
-    })
-    .subscribe();
+  try {
+    sb.channel('messages-for-'+SESSION.username)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'recipient_username=eq.'+SESSION.username},payload=>{
+        MSGS.unshift({id:payload.new.id,text:payload.new.text,is_read:false,created_at:payload.new.created_at});
+        updateStats();renderMsgs();
+        showToast('New anonymous message! 👻','📨');
+        const b=document.getElementById('bell');b.style.transform='scale(1.3)';setTimeout(()=>b.style.transform='scale(1)',300);
+      })
+      .subscribe();
+  } catch(e){ console.log('Realtime not available:', e); }
 });
+
+async function loadProfile(){
+  // Use gm_login to fetch fresh profile data - but don't redirect on failure,
+  // just use cached data if available
+  try {
+    const {data,error}=await sb.rpc('gm_login',{
+      p_username:SESSION.username,
+      p_password:SESSION.password
+    });
+    if(error){
+      console.warn('Profile fetch error:', error);
+      // Build a minimal CU from session so page still loads
+      CU = {
+        username: SESSION.username,
+        display_name: SESSION.username,
+        avatar_color: '#e63946',
+        avatar_letter: SESSION.username.charAt(0).toUpperCase(),
+        is_first_login: false,
+        sound_enabled: true,
+        animations_enabled: true,
+        notif_enabled: true,
+        link_visits: 0
+      };
+      return true; // Don't kick user out just because profile fetch failed
+    }
+    if(!data || !data.success){
+      // Password mismatch - session is stale, must re-login
+      localStorage.removeItem('gm_session');
+      return false;
+    }
+    CU = data.user;
+    return true;
+  } catch(e) {
+    console.warn('loadProfile exception:', e);
+    // Network error - still let user see cached dashboard
+    CU = {
+      username: SESSION.username,
+      display_name: SESSION.username,
+      avatar_color: '#e63946',
+      avatar_letter: SESSION.username.charAt(0).toUpperCase(),
+      is_first_login: false,
+      sound_enabled: true,
+      animations_enabled: true,
+      notif_enabled: true,
+      link_visits: 0
+    };
+    return true;
+  }
+}
 
 async function loadMessages(){
   const {data,error}=await sb.rpc('gm_get_messages',{p_username:SESSION.username,p_password:SESSION.password});

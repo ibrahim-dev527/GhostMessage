@@ -184,7 +184,19 @@ function toggleMenu(){const o=document.getElementById('mobileMenu').classList.to
 function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');document.getElementById('mobOverlay').classList.remove('show');document.getElementById('hamburger').classList.remove('open');}
 function showToast(msg,icon='👻'){document.getElementById('toastMsg').textContent=msg;document.getElementById('toastIcon').textContent=icon;const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 // Check session
-(function(){const s=localStorage.getItem('gm_session');if(s){try{const p=JSON.parse(s);if(p.username&&Date.now()-p.loggedAt<7*24*60*60*1000)window.location.href='dashboard.html';}catch(e){}}})();
+// If already logged in, go to dashboard
+(function(){
+  try {
+    const raw = localStorage.getItem('gm_session');
+    if(raw){
+      const sess = JSON.parse(raw);
+      const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+      if(sess && sess.username && sess.password && sess.loggedAt && (Date.now() - sess.loggedAt < SEVEN_DAYS)){
+        window.location.href = 'dashboard.html';
+      }
+    }
+  } catch(e){ localStorage.removeItem('gm_session'); }
+})();
 
 // ---- SUPABASE CONNECTION TEST (runs on page load) ----
 (async function(){
@@ -251,7 +263,13 @@ function doSignup(){
         return;
       }
       // Store session locally (username + password kept only for re-authenticating RPC calls)
-      localStorage.setItem('gm_session',JSON.stringify({username:u.toLowerCase(),password:p,loggedAt:Date.now()}));
+      // Save session - same format as login page
+      const session = {
+        username: u.toLowerCase(),
+        password: p,
+        loggedAt: Date.now()
+      };
+      localStorage.setItem('gm_session', JSON.stringify(session));
       showToast('Account created! Welcome 👻','✅');
       setTimeout(()=>window.location.href='dashboard.html',1200);
     }catch(err){

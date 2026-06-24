@@ -161,33 +161,87 @@ function togglePw(){const i=document.getElementById('pw');const b=document.getEl
 // Pre-fill remembered
 window.addEventListener('DOMContentLoaded',()=>{
   const r=localStorage.getItem('gm_remember');if(r){try{const p=JSON.parse(r);document.getElementById('username').value=p.username||'';document.getElementById('remember').checked=true;}catch(e){}}
-  const s=localStorage.getItem('gm_session');if(s){try{const p=JSON.parse(s);if(p.username&&Date.now()-p.loggedAt<7*24*60*60*1000)window.location.href='dashboard.html';}catch(e){}}
-});
-function doLogin(){
-  const u=document.getElementById('username').value.trim().toLowerCase();const p=document.getElementById('pw').value;const rem=document.getElementById('remember').checked;
-  document.querySelectorAll('.fg').forEach(g=>g.classList.remove('err'));
-  if(!u){document.getElementById('g-user').classList.add('err');document.getElementById('e-user').textContent='Please enter your username.';return;}
-  if(!p){document.getElementById('g-pw').classList.add('err');document.getElementById('e-pw').textContent='Please enter your password.';return;}
-  const btn=document.getElementById('loginBtn');btn.classList.add('loading');btn.disabled=true;
-  (async()=>{
-    try{
-      const {data,error}=await sb.rpc('gm_login',{p_username:u,p_password:p});
-      if(error){btn.classList.remove('loading');btn.disabled=false;showToast('Network error. Try again.','❌');console.error(error);return;}
-      if(!data.success){
-        btn.classList.remove('loading');btn.disabled=false;
-        document.getElementById('g-pw').classList.add('err');
-        document.getElementById('e-pw').textContent=data.error;
-        showToast(data.error,'❌');
+  // Check if already logged in - redirect to dashboard if valid session exists
+  try {
+    const raw = localStorage.getItem('gm_session');
+    if(raw){
+      const sess = JSON.parse(raw);
+      const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+      if(sess && sess.username && sess.password && sess.loggedAt && (Date.now() - sess.loggedAt < SEVEN_DAYS)){
+        window.location.href = 'dashboard.html';
         return;
       }
-      localStorage.setItem('gm_session',JSON.stringify({username:u,password:p,loggedAt:Date.now()}));
-      if(rem)localStorage.setItem('gm_remember',JSON.stringify({username:u}));else localStorage.removeItem('gm_remember');
-      showToast('Welcome back, '+(data.user.display_name||u)+'! 👻','✅');
-      setTimeout(()=>window.location.href='dashboard.html',1200);
+    }
+  } catch(e){ localStorage.removeItem('gm_session'); }
+});
+function doLogin(){
+  const u = document.getElementById('username').value.trim().toLowerCase();
+  const p = document.getElementById('pw').value;
+  const rem = document.getElementById('remember').checked;
+
+  // Clear previous errors
+  document.querySelectorAll('.fg').forEach(g=>g.classList.remove('err'));
+
+  // Basic validation
+  if(!u){
+    document.getElementById('g-user').classList.add('err');
+    document.getElementById('e-user').textContent='Please enter your username.';
+    return;
+  }
+  if(!p){
+    document.getElementById('g-pw').classList.add('err');
+    document.getElementById('e-pw').textContent='Please enter your password.';
+    return;
+  }
+
+  const btn=document.getElementById('loginBtn');
+  btn.classList.add('loading');
+  btn.disabled=true;
+
+  (async()=>{
+    try{
+      const {data,error}=await sb.rpc('gm_login',{p_username:u, p_password:p});
+
+      if(error){
+        btn.classList.remove('loading');btn.disabled=false;
+        showToast('Connection error. Check your internet and try again.','❌');
+        console.error('Supabase error:', error);
+        return;
+      }
+
+      if(!data || !data.success){
+        btn.classList.remove('loading');btn.disabled=false;
+        document.getElementById('g-pw').classList.add('err');
+        document.getElementById('e-pw').textContent = data ? data.error : 'Login failed.';
+        showToast(data ? data.error : 'Login failed.','❌');
+        return;
+      }
+
+      // Save session with username, password (needed for future RPC calls), and timestamp
+      const session = {
+        username: u,
+        password: p,
+        loggedAt: Date.now()
+      };
+      localStorage.setItem('gm_session', JSON.stringify(session));
+
+      // Save remember-me preference
+      if(rem){
+        localStorage.setItem('gm_remember', JSON.stringify({username:u}));
+      } else {
+        localStorage.removeItem('gm_remember');
+      }
+
+      const displayName = (data.user && data.user.display_name) ? data.user.display_name : u;
+      showToast('Welcome back, '+displayName+'! 👻','✅');
+
+      // Small delay so user sees the success toast, then redirect
+      setTimeout(()=>{ window.location.href='dashboard.html'; }, 800);
+
     }catch(err){
       btn.classList.remove('loading');btn.disabled=false;
-      showToast('Network error. Check your connection.','❌');
-      console.error(err);
+      showToast('Network error. Check your internet connection.','❌');
+      console.error('Login exception:', err);
     }
   })();
 }
